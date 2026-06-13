@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#1E40AF">
+    <title>Dashboard - Simpangan Rata-Rata</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .welcome-card {
+            background: linear-gradient(135deg, var(--blue) 0%, var(--blue-dark) 100%);
+            color: var(--white);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            margin-bottom: var(--space-md);
+        }
+
+        .welcome-greeting {
+            font-size: var(--text-sm);
+            opacity: 0.9;
+            margin-bottom: 4px;
+        }
+
+        .welcome-name {
+            font-size: var(--text-xl);
+            font-weight: 700;
+            margin-bottom: var(--space-xs);
+        }
+
+        .welcome-meta {
+            font-size: var(--text-sm);
+            opacity: 0.85;
+        }
+
+        .level-badge-large {
+            display: inline-block;
+            background-color: rgba(255, 255, 255, 0.2);
+            color: var(--white);
+            padding: 4px 12px;
+            border-radius: var(--radius-full);
+            font-size: var(--text-xs);
+            font-weight: 600;
+            margin-top: var(--space-sm);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-sm);
+        }
+
+        .menu-item {
+            background-color: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            color: var(--gray-900);
+            display: block;
+        }
+
+        .menu-item:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            color: var(--primary);
+        }
+
+        .menu-item.locked {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background-color: var(--gray-100);
+        }
+
+        .menu-item.locked:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        .menu-icon {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: var(--space-xs);
+        }
+
+        .menu-item.locked .menu-icon {
+            color: var(--gray-500);
+        }
+
+        .menu-label {
+            font-size: var(--text-sm);
+            font-weight: 600;
+        }
+
+        .menu-status {
+            font-size: var(--text-xs);
+            color: var(--gray-600);
+            margin-top: 2px;
+        }
+
+        .progress-card .progress {
+            margin-top: var(--space-sm);
+        }
+
+        .status-pill {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: var(--radius-full);
+            font-size: var(--text-xs);
+            font-weight: 600;
+        }
+
+        .status-belum { background: var(--gray-200); color: var(--gray-700); }
+        .status-progress { background: var(--yellow-bg); color: var(--yellow-dark); }
+        .status-lulus { background: var(--success-bg); color: var(--success); }
+        .status-remedial { background: var(--red-bg); color: var(--red-dark); }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <h1 class="app-header-title">Dashboard</h1>
+            <p class="app-header-subtitle">Simpangan Rata-Rata Data Tunggal</p>
+        </header>
+
+        <main class="content" id="dashboard-content">
+            <div class="spinner"></div>
+            <p class="text-center text-muted">Memuat dashboard...</p>
+        </main>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Require login
+            if (!Utils.requireLogin()) return;
+
+            const user = Utils.getUser();
+            const content = document.getElementById('dashboard-content');
+
+            // Fetch progress dari API
+            let progress = {
+                level: null,
+                diagnostikSelesai: false,
+                materiSelesai: false,
+                latihanSelesai: false,
+                formatifSelesai: false,
+                status: 'belum_mulai'
+            };
+
+            try {
+                const result = await API.getProgress(user.id);
+                if (result.success) {
+                    progress = { ...progress, ...result.data };
+                }
+            } catch (error) {
+                console.error('Error fetching progress:', error);
+            }
+
+            // Render dashboard
+            renderDashboard(user, progress);
+        });
+
+        function renderDashboard(user, progress) {
+            const content = document.getElementById('dashboard-content');
+
+            const levelText = progress.level
+                ? `Level ${progress.level}`
+                : 'Belum ada level';
+
+            const gayaText = user.gayaBelajar
+                ? user.gayaBelajar.charAt(0).toUpperCase() + user.gayaBelajar.slice(1)
+                : 'Belum dipilih';
+
+            // Hitung progress percent
+            const totalTahap = 4;
+            let tahapSelesai = 0;
+            if (progress.diagnostikSelesai) tahapSelesai++;
+            if (progress.materiSelesai) tahapSelesai++;
+            if (progress.latihanSelesai) tahapSelesai++;
+            if (progress.formatifSelesai) tahapSelesai++;
+            const progressPercent = Math.round((tahapSelesai / totalTahap) * 100);
+
+            // Status badge
+            const statusMap = {
+                'belum_mulai': { label: 'Belum Mulai', class: 'status-belum' },
+                'sedang_belajar': { label: 'Sedang Belajar', class: 'status-progress' },
+                'lulus': { label: 'Lulus', class: 'status-lulus' },
+                'remedial': { label: 'Remedial', class: 'status-remedial' }
+            };
+            const statusInfo = statusMap[progress.status] || statusMap['belum_mulai'];
+
+            // Lock logic: menu selanjutnya hanya bisa diakses jika sebelumnya selesai
+            const diagnostikUnlocked = true;
+            const materiUnlocked = progress.diagnostikSelesai;
+            const lkpdUnlocked = progress.materiSelesai;
+            const latihanUnlocked = progress.materiSelesai;
+            const formatifUnlocked = progress.latihanSelesai;
+            const remedialUnlocked = progress.formatifSelesai && progress.status === 'remedial';
+            const pengayaanUnlocked = progress.formatifSelesai && progress.status === 'lulus';
+            const refleksiUnlocked = progress.formatifSelesai;
+
+            content.innerHTML = `
+                <!-- Welcome Card -->
+                <div class="welcome-card">
+                    <div class="welcome-greeting">Selamat datang,</div>
+                    <div class="welcome-name">${user.nama}</div>
+                    <div class="welcome-meta">
+                        Gaya Belajar: ${gayaText}
+                    </div>
+                    <span class="level-badge-large">${levelText}</span>
+                </div>
+
+                <!-- Progress Card -->
+                <div class="card progress-card">
+                    <div class="flex justify-between items-center mb-sm">
+                        <strong>Progress Pembelajaran</strong>
+                        <span class="status-pill ${statusInfo.class}">${statusInfo.label}</span>
+                    </div>
+                    <div class="progress-label">
+                        <span>${tahapSelesai}/${totalTahap} tahap selesai</span>
+                        <span>${progressPercent}%</span>
+                    </div>
+                    <div class="progress">
+                        <div class="progress-bar" style="width: ${progressPercent}%"></div>
+                    </div>
+                </div>
+
+                <!-- Tahap 1: Diagnostik -->
+                <div class="card">
+                    <h3 class="card-title">Tahap 1: Asesmen Diagnostik</h3>
+                    <p class="card-subtitle">
+                        Mulai dari sini untuk menentukan level belajar Anda.
+                    </p>
+                    <a href="diagnostik.html" class="btn ${progress.diagnostikSelesai ? 'btn-secondary' : 'btn-primary'} btn-block">
+                        ${progress.diagnostikSelesai ? 'Sudah Selesai &middot; Buka Ulang' : 'Mulai Diagnostik'}
+                    </a>
+                </div>
+
+                <!-- Menu Pembelajaran -->
+                <h3 class="card-title mt-lg mb-sm">Menu Pembelajaran</h3>
+                <div class="menu-grid">
+                    <a href="${materiUnlocked ? 'materi.html' : '#'}" class="menu-item ${!materiUnlocked ? 'locked' : ''}">
+                        <div class="menu-icon">M</div>
+                        <div class="menu-label">Materi</div>
+                        <div class="menu-status">${progress.materiSelesai ? 'Selesai' : (materiUnlocked ? 'Tersedia' : 'Terkunci')}</div>
+                    </a>
+
+                    <a href="${lkpdUnlocked ? 'lkpd.html' : '#'}" class="menu-item ${!lkpdUnlocked ? 'locked' : ''}">
+                        <div class="menu-icon">L</div>
+                        <div class="menu-label">LKPD</div>
+                        <div class="menu-status">${lkpdUnlocked ? 'Tersedia' : 'Terkunci'}</div>
+                    </a>
+
+                    <a href="${latihanUnlocked ? 'latihan.html' : '#'}" class="menu-item ${!latihanUnlocked ? 'locked' : ''}">
+                        <div class="menu-icon">P</div>
+                        <div class="menu-label">Latihan</div>
+                        <div class="menu-status">${progress.latihanSelesai ? 'Selesai' : (latihanUnlocked ? 'Tersedia' : 'Terkunci')}</div>
+                    </a>
+
+                    <a href="${formatifUnlocked ? 'formatif.html' : '#'}" class="menu-item ${!formatifUnlocked ? 'locked' : ''}">
+                        <div class="menu-icon">F</div>
+                        <div class="menu-label">Formatif</div>
+                        <div class="menu-status">${progress.formatifSelesai ? 'Selesai' : (formatifUnlocked ? 'Tersedia' : 'Terkunci')}</div>
+                    </a>
+
+                    ${remedialUnlocked ? `
+                    <a href="remedial.html" class="menu-item">
+                        <div class="menu-icon" style="color: var(--red);">R</div>
+                        <div class="menu-label">Remedial</div>
+                        <div class="menu-status">Skor &lt; 75</div>
+                    </a>
+                    ` : ''}
+
+                    ${pengayaanUnlocked ? `
+                    <a href="pengayaan.html" class="menu-item">
+                        <div class="menu-icon" style="color: var(--success);">+</div>
+                        <div class="menu-label">Pengayaan</div>
+                        <div class="menu-status">Skor &ge; 75</div>
+                    </a>
+                    ` : ''}
+
+                    <a href="${refleksiUnlocked ? 'refleksi.html' : '#'}" class="menu-item ${!refleksiUnlocked ? 'locked' : ''}">
+                        <div class="menu-icon">?</div>
+                        <div class="menu-label">Refleksi</div>
+                        <div class="menu-status">${refleksiUnlocked ? 'Tersedia' : 'Terkunci'}</div>
+                    </a>
+                </div>
+
+                <!-- Logout -->
+                <button class="btn btn-secondary btn-block mt-lg" onclick="Utils.logout()">
+                    Keluar (Logout)
+                </button>
+
+                <p class="text-center text-muted text-xs mt-md">
+                    SMK Negeri 1 Salatiga &middot; Kelas X Pemasaran
+                </p>
+            `;
+        }
+    </script>
+</body>
+</html>

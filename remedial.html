@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#DC2626">
+    <title>Remedial</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .remedial-header {
+            background: linear-gradient(135deg, var(--red) 0%, var(--red-dark) 100%);
+            color: var(--white);
+            padding: var(--space-lg);
+            border-radius: var(--radius-lg);
+            margin-bottom: var(--space-md);
+        }
+
+        .step-indikator {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--white);
+            padding: var(--space-md);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-md);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .step-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        .step-item:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            top: 16px;
+            left: 60%;
+            right: -40%;
+            height: 2px;
+            background-color: var(--gray-300);
+            z-index: 0;
+        }
+
+        .step-item.completed:not(:last-child)::after {
+            background-color: var(--success);
+        }
+
+        .step-circle {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: var(--gray-300);
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: var(--text-sm);
+            margin-bottom: 4px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .step-item.current .step-circle {
+            background-color: var(--red);
+        }
+
+        .step-item.completed .step-circle {
+            background-color: var(--success);
+        }
+
+        .step-label {
+            font-size: var(--text-xs);
+            color: var(--gray-700);
+            text-align: center;
+        }
+
+        .step-item.current .step-label {
+            color: var(--red);
+            font-weight: 700;
+        }
+
+        .topik-lemah {
+            background-color: var(--red-bg);
+            border-left: 4px solid var(--red-dark);
+            padding: var(--space-md);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-md);
+        }
+
+        .topik-lemah-title {
+            font-size: var(--text-sm);
+            color: var(--red-dark);
+            font-weight: 700;
+            margin-bottom: var(--space-sm);
+        }
+
+        .topik-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-xs);
+        }
+
+        .topik-tag {
+            background-color: var(--white);
+            color: var(--red-dark);
+            padding: 4px 10px;
+            border-radius: var(--radius-full);
+            font-size: var(--text-xs);
+            font-weight: 600;
+            border: 1px solid var(--red-light);
+        }
+
+        .materi-review {
+            background-color: var(--white);
+            padding: var(--space-md);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-sm);
+            border-left: 4px solid var(--primary);
+        }
+
+        .materi-review-title {
+            font-size: var(--text-sm);
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: var(--space-xs);
+        }
+
+        .materi-review-content {
+            font-size: var(--text-sm);
+            color: var(--gray-700);
+            line-height: 1.6;
+        }
+
+        .formula-mini {
+            display: inline-block;
+            background-color: var(--primary-bg-soft);
+            padding: 4px 10px;
+            border-radius: var(--radius-sm);
+            font-family: var(--font-mono);
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin: 4px 0;
+        }
+                /* ===== TAMBAHAN: CSS UNTUK SOAL ===== */
+        .soal-card {
+            background-color: var(--white);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            margin-bottom: var(--space-md);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .soal-topik {
+            display: inline-block;
+            background-color: var(--primary-bg-soft);
+            color: var(--primary-dark);
+            padding: 4px 12px;
+            border-radius: var(--radius-full);
+            font-size: var(--text-xs);
+            font-weight: 600;
+        }
+
+        .soal-bobot {
+            display: inline-block;
+            background-color: var(--yellow-bg);
+            color: var(--yellow-dark);
+            padding: 4px 12px;
+            border-radius: var(--radius-full);
+            font-size: var(--text-xs);
+            font-weight: 700;
+        }
+
+        .soal-pertanyaan {
+            font-size: var(--text-base);
+            color: var(--gray-900);
+            line-height: 1.6;
+            margin-bottom: var(--space-lg);
+            font-weight: 500;
+        }
+
+        .pilihan-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-sm);
+        }
+
+        .pilihan-item {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--space-md);
+            padding: var(--space-md);
+            border: 2px solid var(--gray-300);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: var(--transition);
+            background-color: var(--white);
+        }
+
+        .pilihan-item:hover {
+            border-color: var(--red-light);
+            background-color: var(--red-bg-soft);
+        }
+
+        .pilihan-item.selected {
+            border-color: var(--red);
+            background-color: var(--red-bg-soft);
+        }
+
+        .pilihan-label {
+            background-color: var(--gray-200);
+            color: var(--gray-800);
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: var(--text-sm);
+            flex-shrink: 0;
+        }
+
+        .pilihan-item.selected .pilihan-label {
+            background-color: var(--red);
+            color: var(--white);
+        }
+
+        .pilihan-teks {
+            font-size: var(--text-sm);
+            color: var(--gray-800);
+            line-height: 1.5;
+            padding-top: 4px;
+        }
+
+        .nav-soal {
+            display: flex;
+            gap: var(--space-sm);
+            margin-top: var(--space-lg);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <button class="app-header-back" onclick="window.location.href='dashboard-siswa.html'">
+                &larr; Dashboard
+            </button>
+            <h1 class="app-header-title">Remedial</h1>
+            <p class="app-header-subtitle">Pemulihan pembelajaran</p>
+        </header>
+
+        <main class="content" id="content">
+            <div class="spinner"></div>
+        </main>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/soal-remedial.js"></script>
+    <script>
+        let currentStep = 1;
+        let topikLemah = [];
+        let jawabanRetest = [];
+        let user = null;
+
+        window.addEventListener('load', function() {
+            setTimeout(initApp, 200);
+        });
+
+        function initApp() {
+            if (!Utils.requireLogin()) return;
+
+            user = Utils.getUser();
+
+            // Ambil hasil formatif terakhir
+            const hasilStr = localStorage.getItem('formatif_hasil');
+            if (hasilStr) {
+                const hasil = JSON.parse(hasilStr);
+                topikLemah = hasil.detail.filter(d => !d.benar).map(d => d.topik);
+                // Remove duplicates
+                topikLemah = [...new Set(topikLemah)];
+            }
+
+            renderStep1();
+        }
+
+        function renderStepIndikator(step) {
+            const steps = ['Identifikasi', 'Tinjau Materi', 'Latihan', 'Re-test'];
+            return `
+                <div class="step-indikator">
+                    ${steps.map((label, i) => {
+                        const num = i + 1;
+                        let cls = 'step-item';
+                        if (num === step) cls += ' current';
+                        else if (num < step) cls += ' completed';
+                        return `
+                            <div class="${cls}">
+                                <div class="step-circle">${num < step ? '✓' : num}</div>
+                                <div class="step-label">${label}</div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+        }
+
+        // ===== STEP 1: IDENTIFIKASI TOPIK LEMAH =====
+        function renderStep1() {
+            currentStep = 1;
+
+            const topikHtml = topikLemah.length > 0
+                ? topikLemah.map(t => `<span class="topik-tag">${t}</span>`).join('')
+                : '<span class="text-muted text-sm">Tidak ada data formatif terbaru</span>';
+
+            document.getElementById('content').innerHTML = `
+                <div class="remedial-header">
+                    <h2 style="margin-bottom: 4px; font-size: var(--text-lg);">Remedial</h2>
+                    <p style="font-size: var(--text-sm); opacity: 0.9;">
+                        Mari kita pulihkan pemahaman Anda dengan 4 langkah berikut.
+                    </p>
+                </div>
+
+                ${renderStepIndikator(1)}
+
+                <div class="card">
+                    <h3 class="card-title">Langkah 1: Identifikasi Topik Lemah</h3>
+                    <p class="text-sm text-muted mb-md">
+                        Berdasarkan hasil formatif Anda, berikut topik-topik yang masih perlu diperkuat:
+                    </p>
+
+                    <div class="topik-lemah">
+                        <div class="topik-lemah-title">Topik yang Belum Dikuasai:</div>
+                        <div class="topik-list">${topikHtml}</div>
+                    </div>
+
+                    ${topikLemah.length === 0 ? `
+                        <div class="alert alert-info">
+                            Tidak ditemukan data formatif terbaru. Anda tetap bisa lanjut
+                            ke langkah berikutnya untuk meninjau ulang seluruh materi.
+                        </div>
+                    ` : ''}
+                </div>
+
+                <button class="btn btn-danger btn-block btn-large" onclick="renderStep2()">
+                    Lanjut ke Tinjau Materi &rarr;
+                </button>
+            `;
+            window.scrollTo(0, 0);
+        }
+
+        // ===== STEP 2: TINJAU MATERI =====
+        function renderStep2() {
+            currentStep = 2;
+
+            document.getElementById('content').innerHTML = `
+                <div class="remedial-header">
+                    <h2 style="margin-bottom: 4px; font-size: var(--text-lg);">Tinjau Materi</h2>
+                    <p style="font-size: var(--text-sm); opacity: 0.9;">
+                        Review konsep kunci sebelum latihan tambahan.
+                    </p>
+                </div>
+
+                ${renderStepIndikator(2)}
+
+                <div class="materi-review">
+                    <div class="materi-review-title">1. Pengertian Simpangan Rata-Rata</div>
+                    <div class="materi-review-content">
+                        SR adalah <strong>rata-rata jarak setiap data terhadap rata-ratanya</strong>.
+                        Mengukur seberapa konsisten data.
+                    </div>
+                </div>
+
+                <div class="materi-review">
+                    <div class="materi-review-title">2. Rumus</div>
+                    <div class="materi-review-content">
+                        <div class="formula-mini">SR = Σ|xᵢ - x̄| / n</div><br>
+                        Jumlah nilai mutlak selisih dibagi banyak data.
+                    </div>
+                </div>
+
+                <div class="materi-review">
+                    <div class="materi-review-title">3. Langkah R-S-M-J-B</div>
+                    <div class="materi-review-content">
+                        <strong>R</strong>ata-rata &middot;
+                        <strong>S</strong>elisih &middot;
+                        <strong>M</strong>utlak &middot;
+                        <strong>J</strong>umlah &middot;
+                        <strong>B</strong>agi
+                    </div>
+                </div>
+
+                <div class="materi-review">
+                    <div class="materi-review-title">4. Interpretasi</div>
+                    <div class="materi-review-content">
+                        <strong>SR kecil</strong> = data konsisten (mengumpul dekat rata-rata)<br>
+                        <strong>SR besar</strong> = data tidak konsisten (menyebar jauh)
+                    </div>
+                </div>
+
+                <div class="materi-review">
+                    <div class="materi-review-title">5. Contoh Cepat</div>
+                    <div class="materi-review-content">
+                        Data: 2, 4, 6, 8, 10<br>
+                        x̄ = 6 &middot; Mutlak: 4,2,0,2,4 &middot; Jumlah = 12<br>
+                        <strong>SR = 12/5 = 2,4</strong>
+                    </div>
+                </div>
+
+                <div class="alert alert-info mt-md">
+                    <strong>Tip:</strong> Untuk materi lebih lengkap, Anda bisa membuka
+                    halaman <a href="materi.html">Materi</a> kapan saja.
+                </div>
+
+                <div class="nav-soal">
+                    <button class="btn btn-secondary" onclick="renderStep1()" style="flex: 1;">
+                        &larr; Sebelumnya
+                    </button>
+                    <button class="btn btn-danger" onclick="renderStep3()" style="flex: 1;">
+                        Lanjut ke Latihan &rarr;
+                    </button>
+                </div>
+            `;
+            window.scrollTo(0, 0);
+        }
+
+        // ===== STEP 3: LATIHAN =====
+        function renderStep3() {
+            currentStep = 3;
+
+            document.getElementById('content').innerHTML = `
+                <div class="remedial-header">
+                    <h2 style="margin-bottom: 4px; font-size: var(--text-lg);">Latihan Tambahan</h2>
+                    <p style="font-size: var(--text-sm); opacity: 0.9;">
+                        Buka Latihan Terbimbing untuk berlatih dengan hint.
+                    </p>
+                </div>
+
+                ${renderStepIndikator(3)}
+
+                <div class="card">
+                    <h3 class="card-title">Latihan Terbimbing</h3>
+                    <p class="card-body">
+                        Kami sarankan Anda mengerjakan <strong>Latihan Terbimbing</strong>
+                        terlebih dahulu untuk memperkuat pemahaman. Setelah itu kembali
+                        ke sini untuk Re-test.
+                    </p>
+
+                    <a href="latihan-terbimbing.html" class="btn btn-primary btn-block btn-large mt-md">
+                        Buka Latihan Terbimbing
+                    </a>
+                </div>
+
+                <div class="card">
+                    <h3 class="card-title">Sudah Berlatih?</h3>
+                    <p class="card-body">
+                        Jika Anda sudah cukup berlatih, lanjut ke Re-test untuk
+                        mengukur ulang pemahaman.
+                    </p>
+                </div>
+
+                <div class="nav-soal">
+                    <button class="btn btn-secondary" onclick="renderStep2()" style="flex: 1;">
+                        &larr; Sebelumnya
+                    </button>
+                    <button class="btn btn-danger" onclick="renderStep4()" style="flex: 1;">
+                        Lanjut ke Re-test &rarr;
+                    </button>
+                </div>
+            `;
+            window.scrollTo(0, 0);
+        }
+
+        // ===== STEP 4: RE-TEST =====
+        let currentRetestSoal = 0;
+
+        function renderStep4() {
+            currentStep = 4;
+            currentRetestSoal = 0;
+            jawabanRetest = new Array(SOAL_REMEDIAL.length).fill(null);
+
+            renderRetestIntro();
+        }
+
+        function renderRetestIntro() {
+            document.getElementById('content').innerHTML = `
+                <div class="remedial-header">
+                    <h2 style="margin-bottom: 4px; font-size: var(--text-lg);">Re-test</h2>
+                    <p style="font-size: var(--text-sm); opacity: 0.9;">
+                        5 soal untuk mengukur ulang pemahaman Anda.
+                    </p>
+                </div>
+
+                ${renderStepIndikator(4)}
+
+                <div class="card">
+                    <h3 class="card-title">Petunjuk Re-test</h3>
+                    <ul style="margin: 0 0 0 20px; line-height: 1.8;">
+                        <li>5 soal pilihan ganda, bobot 20 poin per soal</li>
+                        <li>Total skor: 100</li>
+                        <li><strong>Target lulus: skor minimal 75</strong></li>
+                        <li>Jika lulus, status berubah jadi LULUS</li>
+                        <li>Jika belum, Anda bisa mengulang remedial</li>
+                    </ul>
+                </div>
+
+                <button class="btn btn-danger btn-block btn-large" onclick="renderRetestSoal()">
+                    Mulai Re-test
+                </button>
+
+                <button class="btn btn-secondary btn-block mt-sm" onclick="renderStep3()">
+                    Kembali ke Latihan
+                </button>
+            `;
+            window.scrollTo(0, 0);
+        }
+
+        function renderRetestSoal() {
+            const soal = SOAL_REMEDIAL[currentRetestSoal];
+            const total = SOAL_REMEDIAL.length;
+            const isLast = currentRetestSoal === total - 1;
+            const isFirst = currentRetestSoal === 0;
+
+            const pilihanHtml = soal.pilihan.map(p => {
+                const isSelected = jawabanRetest[currentRetestSoal] === p.label;
+                return `
+                    <div class="pilihan-item ${isSelected ? 'selected' : ''}" data-label="${p.label}">
+                        <div class="pilihan-label">${p.label}</div>
+                        <div class="pilihan-teks">${p.teks}</div>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('content').innerHTML = `
+                <div class="remedial-header">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h2 style="margin: 0; font-size: var(--text-base);">Re-test</h2>
+                        <span style="background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: var(--radius-full); font-weight: 700; font-size: var(--text-sm);">
+                            ${currentRetestSoal + 1} / ${total}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="soal-card">
+                    <div style="display: flex; gap: var(--space-sm); margin-bottom: var(--space-md);">
+                        <span class="soal-topik">${soal.topik}</span>
+                        <span class="soal-bobot">${soal.bobot} poin</span>
+                    </div>
+                    <p class="soal-pertanyaan">${soal.pertanyaan}</p>
+                    <div class="pilihan-list">
+                        ${pilihanHtml}
+                    </div>
+                </div>
+
+                <div class="nav-soal">
+                    ${!isFirst ? `
+                        <button class="btn btn-secondary" onclick="prevRetestSoal()" style="flex: 1;">
+                            &larr; Sebelumnya
+                        </button>
+                    ` : ''}
+                    ${!isLast ? `
+                        <button class="btn btn-danger" onclick="nextRetestSoal()" style="flex: 1;">
+                            Selanjutnya &rarr;
+                        </button>
+                    ` : `
+                        <button class="btn btn-success" onclick="submitRetest()" style="flex: 1;">
+                            Selesai &amp; Kirim
+                        </button>
+                    `}
+                </div>
+            `;
+
+            document.querySelectorAll('.pilihan-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    jawabanRetest[currentRetestSoal] = this.dataset.label;
+                    renderRetestSoal();
+                });
+            });
+
+            window.scrollTo(0, 0);
+        }
+
+        function nextRetestSoal() {
+            if (jawabanRetest[currentRetestSoal] === null) {
+                Utils.toast('Silakan pilih jawaban');
+                return;
+            }
+            if (currentRetestSoal < SOAL_REMEDIAL.length - 1) {
+                currentRetestSoal++;
+                renderRetestSoal();
+            }
+        }
+
+        function prevRetestSoal() {
+            if (currentRetestSoal > 0) {
+                currentRetestSoal--;
+                renderRetestSoal();
+            }
+        }
+
+        async function submitRetest() {
+            const belumDijawab = jawabanRetest.findIndex(j => j === null);
+            if (belumDijawab !== -1) {
+                if (!confirm(`Soal ${belumDijawab + 1} belum dijawab. Lanjut kirim?`)) {
+                    currentRetestSoal = belumDijawab;
+                    renderRetestSoal();
+                    return;
+                }
+            }
+
+            if (!confirm('Yakin kirim jawaban?')) return;
+
+            const hasil = hitungSkorRemedial(jawabanRetest);
+            const lulus = hasil.totalSkor >= 75;
+
+            Utils.showLoading('Menyimpan hasil...');
+
+            try {
+                // Save asesmen remedial
+                await API.saveAsesmen(
+                    user.id,
+                    'remedial',
+                    hasil.totalSkor,
+                    JSON.stringify(jawabanRetest),
+                    lulus ? 'Lulus remedial' : 'Belum lulus, perlu remedial lagi'
+                );
+
+                // Jika lulus, update status di Progress
+                // Note: Apps Script kita auto-update formatif → status, tapi remedial belum
+                // Solusi: gunakan saveAsesmen jenis "formatif" agar status terupdate
+                if (lulus) {
+                    // Simpan lagi dengan jenis 'formatif' agar status berubah jadi 'lulus'
+                    await API.saveAsesmen(
+                        user.id,
+                        'formatif',
+                        hasil.totalSkor,
+                        JSON.stringify(jawabanRetest),
+                        'Lulus via remedial'
+                    );
+                }
+
+                Utils.hideLoading();
+                renderRetestHasil(hasil, lulus);
+            } catch (e) {
+                Utils.hideLoading();
+                Utils.toast('Error: ' + e.message);
+            }
+        }
+
+        function renderRetestHasil(hasil, lulus) {
+            const detailHtml = hasil.detail.map((d, i) => `
+                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--gray-200);">
+                    <div style="flex: 1;">
+                        <div style="font-weight: 600; font-size: var(--text-sm);">Soal ${i+1}: ${d.topik}</div>
+                        ${!d.benar ? `<div style="font-size: var(--text-xs); color: var(--gray-600); margin-top: 4px;">${d.pembahasan}</div>` : ''}
+                    </div>
+                    <span style="background: ${d.benar ? 'var(--success-bg)' : 'var(--red-bg)'}; color: ${d.benar ? 'var(--success)' : 'var(--red-dark)'}; padding: 4px 10px; border-radius: var(--radius-full); font-size: var(--text-xs); font-weight: 700;">
+                        ${d.benar ? `+${d.bobot}` : '0'}
+                    </span>
+                </div>
+            `).join('');
+
+            document.getElementById('content').innerHTML = `
+                <div style="background: linear-gradient(135deg, ${lulus ? 'var(--success) 0%, #15803D' : 'var(--red) 0%, var(--red-dark)'} 100%); color: var(--white); padding: var(--space-xl) var(--space-md); border-radius: var(--radius-lg); text-align: center; margin-bottom: var(--space-md);">
+                    <div style="width: 120px; height: 120px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0 auto var(--space-md); border: 4px solid rgba(255,255,255,0.3);">
+                        <div style="font-size: 40px; font-weight: 800;">${hasil.totalSkor}</div>
+                        <div style="font-size: var(--text-xs); opacity: 0.9;">SKOR</div>
+                    </div>
+                    <div style="font-size: var(--text-2xl); font-weight: 800; margin-bottom: 4px;">
+                        ${lulus ? 'LULUS REMEDIAL!' : 'BELUM LULUS'}
+                    </div>
+                    <div style="font-size: var(--text-base); opacity: 0.95;">
+                        ${lulus ? 'Selamat! Status Anda kini LULUS.' : 'Mari ulangi remedial untuk pemahaman lebih baik.'}
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 class="card-title">Detail Jawaban</h3>
+                    ${detailHtml}
+                </div>
+
+                ${lulus ? `
+                    <a href="pengayaan.html" class="btn btn-success btn-block btn-large mt-md">
+                        Lanjut ke Pengayaan
+                    </a>
+                ` : `
+                    <button class="btn btn-danger btn-block btn-large mt-md" onclick="renderStep1()">
+                        Ulangi Remedial dari Awal
+                    </button>
+                `}
+
+                <a href="dashboard-siswa.html" class="btn btn-secondary btn-block mt-sm">
+                    Kembali ke Dashboard
+                </a>
+            `;
+
+            window.scrollTo(0, 0);
+        }
+    </script>
+</body>
+</html>

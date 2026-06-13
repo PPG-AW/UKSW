@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#1E40AF">
+    <title>Materi - Simpangan Rata-Rata</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* ===== MATERI STYLES ===== */
+
+        .materi-nav {
+            background-color: var(--white);
+            padding: var(--space-md);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-md);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .materi-nav-label {
+            font-size: var(--text-xs);
+            color: var(--gray-600);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .materi-nav-title {
+            font-size: var(--text-lg);
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 4px;
+        }
+
+        .materi-nav-subtitle {
+            font-size: var(--text-sm);
+            color: var(--gray-600);
+        }
+
+        .materi-progress {
+            display: flex;
+            gap: 4px;
+            margin-top: var(--space-sm);
+        }
+
+        .materi-progress-segment {
+            flex: 1;
+            height: 4px;
+            background-color: var(--gray-300);
+            border-radius: 2px;
+        }
+
+        .materi-progress-segment.active {
+            background-color: var(--primary);
+        }
+
+        .materi-progress-segment.completed {
+            background-color: var(--success);
+        }
+
+        .materi-content {
+            background-color: var(--white);
+            padding: var(--space-lg);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: var(--space-md);
+        }
+
+        .materi-content h3.section-subtitle {
+            color: var(--primary);
+            font-size: var(--text-lg);
+            margin: var(--space-md) 0 var(--space-sm) 0;
+            font-weight: 700;
+        }
+
+        .materi-content p {
+            margin-bottom: var(--space-md);
+            line-height: 1.7;
+        }
+
+        .materi-content ul {
+            margin: var(--space-sm) 0 var(--space-md) var(--space-lg);
+            line-height: 1.8;
+        }
+
+        .materi-content ul li {
+            margin-bottom: 4px;
+        }
+
+        /* Hero Quote */
+        .hero-quote {
+            background: linear-gradient(135deg, var(--primary-bg) 0%, var(--primary-bg-soft) 100%);
+            border-left: 4px solid var(--primary);
+            padding: var(--space-lg);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-md);
+            font-size: var(--text-base);
+            line-height: 1.7;
+        }
+
+        /* Example Box */
+        .example-box {
+            background-color: var(--yellow-bg);
+            border-left: 4px solid var(--yellow-dark);
+            padding: var(--space-md);
+            border-radius: var(--radius-sm);
+            margin: var(--space-md) 0;
+            font-size: var(--text-sm);
+        }
+
+        /* Formula Box */
+        .formula-box {
+            background-color: var(--primary-bg-soft);
+            border: 2px solid var(--primary-light);
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+            text-align: center;
+            font-size: var(--text-lg);
+            font-weight: 600;
+            color: var(--primary-dark);
+            margin: var(--space-md) 0;
+        }
+
+        /* Calculation Box */
+        .calculation-box {
+            background-color: var(--gray-100);
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+            margin: var(--space-md) 0;
+            font-family: var(--font-mono);
+            font-size: var(--text-sm);
+        }
+
+        .calculation-box p {
+            margin-bottom: var(--space-xs);
+        }
+
+        /* Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-sm);
+            margin: var(--space-md) 0;
+        }
+
+        .comparison-item {
+            background-color: var(--gray-100);
+            padding: var(--space-md);
+            border-radius: var(--radius-md);
+            text-align: center;
+        }
+
+        .comparison-label {
+            font-size: var(--text-xs);
+            color: var(--gray-600);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: var(--space-xs);
+        }
+
+        .comparison-data {
+            font-family: var(--font-mono);
+            font-size: var(--text-sm);
+            color: var(--gray-800);
+            margin-bottom: var(--space-xs);
+        }
+
+        .comparison-mean {
+            font-weight: 600;
+            color: var(--gray-900);
+            font-size: var(--text-sm);
+            margin-bottom: var(--space-sm);
+        }
+
+        .comparison-status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: var(--radius-full);
+            font-size: var(--text-xs);
+            font-weight: 700;
+        }
+
+        .status-stabil {
+            background-color: var(--success-bg);
+            color: var(--success);
+        }
+
+        .status-tidak-stabil {
+            background-color: var(--red-bg);
+            color: var(--red-dark);
+        }
+
+        /* Interpretation Grid */
+        .interpretation-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--space-sm);
+            margin: var(--space-md) 0;
+        }
+
+        .interpretation-card {
+            padding: var(--space-md);
+            border-radius: var(--radius-md);
+            border-left: 4px solid;
+        }
+
+        .interpretation-card.success {
+            background-color: var(--success-bg);
+            border-color: var(--success);
+        }
+
+        .interpretation-card.danger {
+            background-color: var(--red-bg);
+            border-color: var(--red-dark);
+        }
+
+        .interp-title {
+            font-size: var(--text-lg);
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .interp-label {
+            font-size: var(--text-xs);
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            margin-bottom: var(--space-sm);
+        }
+
+        .interpretation-card.success .interp-title,
+        .interpretation-card.success .interp-label {
+            color: var(--success);
+        }
+
+        .interpretation-card.danger .interp-title,
+        .interpretation-card.danger .interp-label {
+            color: var(--red-dark);
+        }
+
+        .interpretation-card p {
+            font-size: var(--text-sm);
+            margin: 0;
+        }
+
+        /* Rumus Utama */
+        .rumus-utama {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+            padding: var(--space-xl);
+            border-radius: var(--radius-lg);
+            text-align: center;
+            margin: var(--space-md) 0;
+        }
+
+        .rumus-text {
+            font-size: 28px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-sm);
+        }
+
+        .frac {
+            display: inline-flex;
+            flex-direction: column;
+            text-align: center;
+            font-size: 24px;
+        }
+
+        .frac .num {
+            border-bottom: 2px solid var(--white);
+            padding: 4px 12px;
+        }
+
+        .frac .denom {
+            padding-top: 4px;
+        }
+
+        /* Simbol Grid */
+        .simbol-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-sm);
+            margin: var(--space-md) 0;
+        }
+
+        .simbol-card {
+            background-color: var(--white);
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+            text-align: center;
+        }
+
+        .simbol-char {
+            font-size: var(--text-xl);
+            font-weight: 700;
+            color: var(--primary);
+            font-family: var(--font-mono);
+            margin-bottom: 4px;
+        }
+
+        .simbol-desc {
+            font-size: var(--text-xs);
+            color: var(--gray-700);
+        }
+
+        /* Mnemonic Box */
+        .mnemonic-box {
+            background: linear-gradient(135deg, var(--yellow-bg) 0%, var(--yellow-bg-soft) 100%);
+            border: 2px solid var(--yellow-dark);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            text-align: center;
+            margin-bottom: var(--space-lg);
+        }
+
+        .mnemonic-title {
+            font-size: var(--text-xs);
+            color: var(--yellow-dark);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+            margin-bottom: var(--space-sm);
+        }
+
+        .mnemonic-letters {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: var(--space-xs);
+            margin-bottom: var(--space-sm);
+        }
+
+        .mnemonic-letters .letter {
+            background-color: var(--yellow-dark);
+            color: var(--white);
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--text-lg);
+            font-weight: 700;
+        }
+
+        .mnemonic-letters .dash {
+            color: var(--yellow-dark);
+            font-weight: 700;
+        }
+
+        .mnemonic-words {
+            font-size: var(--text-sm);
+            color: var(--gray-800);
+            font-weight: 500;
+        }
+
+        /* Step List */
+        .step-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-sm);
+        }
+
+        .step-item {
+            display: flex;
+            gap: var(--space-md);
+            background-color: var(--white);
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+        }
+
+        .step-num {
+            background-color: var(--primary);
+            color: var(--white);
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: var(--text-lg);
+            flex-shrink: 0;
+        }
+
+        .step-letter {
+            font-size: var(--text-sm);
+            color: var(--primary);
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .step-desc {
+            font-size: var(--text-sm);
+            color: var(--gray-700);
+            line-height: 1.5;
+        }
+
+        /* Aplikasi Grid */
+        .aplikasi-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-sm);
+            margin: var(--space-md) 0;
+        }
+
+        .aplikasi-card {
+            background-color: var(--primary-bg-soft);
+            border: 1px solid var(--primary-light);
+            padding: var(--space-md);
+            border-radius: var(--radius-md);
+            text-align: center;
+        }
+
+        .aplikasi-title {
+            font-size: var(--text-sm);
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 4px;
+            letter-spacing: 0.5px;
+        }
+
+        .aplikasi-desc {
+            font-size: var(--text-xs);
+            color: var(--gray-700);
+            line-height: 1.5;
+        }
+
+        /* Contoh Animasi */
+        .contoh-data {
+            text-align: center;
+            margin-bottom: var(--space-md);
+        }
+
+        .contoh-data-label {
+            font-size: var(--text-sm);
+            color: var(--gray-600);
+            margin-bottom: var(--space-xs);
+        }
+
+        .contoh-data-values {
+            font-family: var(--font-mono);
+            font-size: var(--text-lg);
+            font-weight: 700;
+            color: var(--gray-900);
+            background-color: var(--gray-100);
+            padding: var(--space-sm) var(--space-md);
+            border-radius: var(--radius-md);
+            display: inline-block;
+        }
+
+        .contoh-step {
+            margin-top: var(--space-lg);
+            padding: var(--space-md);
+            background-color: var(--gray-100);
+            border-radius: var(--radius-md);
+            border-left: 4px solid var(--primary);
+            animation: fadeIn 0.4s ease;
+        }
+
+        .contoh-step-label {
+            font-size: var(--text-xs);
+            color: var(--primary);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: var(--space-xs);
+        }
+
+        .contoh-step-content {
+            font-family: var(--font-mono);
+            font-size: var(--text-sm);
+            line-height: 1.8;
+        }
+
+        .contoh-tabel {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: var(--space-sm);
+            font-family: var(--font-mono);
+            font-size: var(--text-xs);
+        }
+
+        .contoh-tabel th,
+        .contoh-tabel td {
+            border: 1px solid var(--gray-400);
+            padding: 6px 8px;
+            text-align: center;
+        }
+
+        .contoh-tabel th {
+            background-color: var(--primary);
+            color: var(--white);
+        }
+
+        .contoh-tabel tr.total {
+            background-color: var(--yellow-bg);
+            font-weight: 700;
+        }
+
+        .contoh-result {
+            background: linear-gradient(135deg, var(--success-bg) 0%, #BBF7D0 100%);
+            border: 2px solid var(--success);
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+            text-align: center;
+            margin-top: var(--space-md);
+        }
+
+        .contoh-result-label {
+            font-size: var(--text-sm);
+            color: var(--success);
+            font-weight: 600;
+            margin-bottom: var(--space-xs);
+        }
+
+        .contoh-result-value {
+            font-size: var(--text-2xl);
+            font-weight: 700;
+            color: var(--success);
+        }
+
+        .contoh-result-desc {
+            font-size: var(--text-sm);
+            color: var(--gray-700);
+            margin-top: var(--space-sm);
+        }
+
+        /* Navigation Footer */
+        .materi-nav-footer {
+            display: flex;
+            gap: var(--space-sm);
+            margin-top: var(--space-lg);
+        }
+
+        .materi-nav-footer .btn {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <button class="app-header-back" onclick="confirmExit()">
+                &larr; Kembali
+            </button>
+            <h1 class="app-header-title">Materi</h1>
+            <p class="app-header-subtitle">Simpangan Rata-Rata Data Tunggal</p>
+        </header>
+
+        <main class="content" id="content">
+            <div class="spinner"></div>
+            <p class="text-center text-muted">Memuat materi...</p>
+        </main>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/materi-content.js"></script>
+    <script>
+        let userLevel = 2;
+        let sections = [];
+        let currentSection = 0;
+
+        window.addEventListener('load', function() {
+            setTimeout(initApp, 200);
+        });
+
+        async function initApp() {
+            if (typeof CONFIG === 'undefined' || typeof Utils === 'undefined' ||
+                typeof API === 'undefined' || typeof MATERI_CONTENT === 'undefined') {
+                alert('Gagal memuat aplikasi. Refresh halaman (Ctrl+F5).');
+                return;
+            }
+
+            if (!Utils.requireLogin()) return;
+
+            const user = Utils.getUser();
+
+            // Fetch level dari API
+            try {
+                const result = await API.getProgress(user.id);
+                if (result.success && result.data.level) {
+                    userLevel = parseInt(result.data.level);
+                }
+            } catch (e) {
+                console.error('Error fetching level:', e);
+            }
+
+            // Tentukan section berdasarkan level
+            buildSections();
+            renderSection();
+        }
+
+        function buildSections() {
+            sections = [];
+
+            // Level 1: mulai dari prasyarat
+            if (userLevel === 1) {
+                MATERI_CONTENT.prasyarat.sections.forEach((s, i) => {
+                    sections.push({
+                        type: 'prasyarat',
+                        index: i,
+                        judul: s.judul,
+                        subjudul: `Prasyarat (${i + 1} dari ${MATERI_CONTENT.prasyarat.sections.length})`,
+                        konten: s.konten
+                    });
+                });
+            }
+
+            // Semua level: materi utama
+            sections.push({
+                type: 'pengertian',
+                judul: MATERI_CONTENT.pengertian.judul,
+                subjudul: MATERI_CONTENT.pengertian.subjudul,
+                konten: MATERI_CONTENT.pengertian.konten
+            });
+
+            sections.push({
+                type: 'rumus',
+                judul: MATERI_CONTENT.rumus.judul,
+                subjudul: MATERI_CONTENT.rumus.subjudul,
+                konten: MATERI_CONTENT.rumus.konten
+            });
+
+            sections.push({
+                type: 'langkah',
+                judul: MATERI_CONTENT.langkah.judul,
+                subjudul: MATERI_CONTENT.langkah.subjudul,
+                konten: MATERI_CONTENT.langkah.konten
+            });
+
+            sections.push({
+                type: 'contoh',
+                judul: MATERI_CONTENT.contoh.judul,
+                subjudul: MATERI_CONTENT.contoh.subjudul,
+                konten: null,
+                custom: 'contoh'
+            });
+
+            sections.push({
+                type: 'aplikasi',
+                judul: MATERI_CONTENT.aplikasi.judul,
+                subjudul: MATERI_CONTENT.aplikasi.subjudul,
+                konten: MATERI_CONTENT.aplikasi.konten
+            });
+        }
+
+        function renderSection() {
+            const section = sections[currentSection];
+            const total = sections.length;
+            const isFirst = currentSection === 0;
+            const isLast = currentSection === total - 1;
+
+            // Progress segments
+            const progressHtml = sections.map((_, i) => {
+                let cls = 'materi-progress-segment';
+                if (i < currentSection) cls += ' completed';
+                else if (i === currentSection) cls += ' active';
+                return `<div class="${cls}"></div>`;
+            }).join('');
+
+            // Render konten
+            let kontenHtml = '';
+            if (section.custom === 'contoh') {
+                kontenHtml = renderContoh();
+            } else {
+                kontenHtml = section.konten;
+            }
+
+            document.getElementById('content').innerHTML = `
+                <div class="materi-nav">
+                    <div class="materi-nav-label">Bagian ${currentSection + 1} dari ${total}</div>
+                    <div class="materi-nav-title">${section.judul}</div>
+                    <div class="materi-nav-subtitle">${section.subjudul}</div>
+                    <div class="materi-progress">${progressHtml}</div>
+                </div>
+
+                <div class="materi-content fade-in">
+                    ${kontenHtml}
+                </div>
+
+                <div class="materi-nav-footer">
+                    ${!isFirst ? `
+                        <button class="btn btn-secondary" onclick="prevSection()">
+                            &larr; Sebelumnya
+                        </button>
+                    ` : ''}
+
+                    ${!isLast ? `
+                        <button class="btn btn-primary" onclick="nextSection()">
+                            Selanjutnya &rarr;
+                        </button>
+                    ` : `
+                        <button class="btn btn-success" onclick="selesaiMateri()">
+                            Selesai Materi
+                        </button>
+                    `}
+                </div>
+            `;
+
+            window.scrollTo(0, 0);
+        }
+
+        function renderContoh() {
+            const data = MATERI_CONTENT.contoh.data;
+            const n = data.length;
+            const mean = data.reduce((a, b) => a + b, 0) / n;
+
+            const tabelRows = data.map((x, i) => `
+                <tr>
+                    <td>${i + 1}</td>
+                    <td>${x}</td>
+                    <td>${(x - mean) > 0 ? '+' : ''}${x - mean}</td>
+                    <td>${Math.abs(x - mean)}</td>
+                </tr>
+            `).join('');
+
+            const jumlah = data.reduce((sum, x) => sum + Math.abs(x - mean), 0);
+            const sr = jumlah / n;
+
+            return `
+                <div class="contoh-data">
+                    <div class="contoh-data-label">Data penjualan harian Toko Maju (juta rupiah):</div>
+                    <div class="contoh-data-values">${data.join(' &nbsp; ')}</div>
+                </div>
+
+                <div class="contoh-step">
+                    <div class="contoh-step-label">Langkah 1: Rata-rata (R)</div>
+                    <div class="contoh-step-content">
+                        Jumlah = ${data.join(' + ')} = ${data.reduce((a, b) => a + b, 0)}<br>
+                        n = ${n}<br>
+                        <strong>x&#772; = ${data.reduce((a, b) => a + b, 0)} &divide; ${n} = ${mean}</strong>
+                    </div>
+                </div>
+
+                <div class="contoh-step">
+                    <div class="contoh-step-label">Langkah 2-3: Selisih (S) dan Mutlak (M)</div>
+                    <table class="contoh-tabel">
+                        <thead>
+                            <tr>
+                                <th>Hari</th>
+                                <th>x<sub>i</sub></th>
+                                <th>x<sub>i</sub> &minus; x&#772;</th>
+                                <th>|x<sub>i</sub> &minus; x&#772;|</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${tabelRows}
+                            <tr class="total">
+                                <td colspan="3">JUMLAH</td>
+                                <td>${jumlah}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="contoh-step">
+                    <div class="contoh-step-label">Langkah 4: Jumlah (J)</div>
+                    <div class="contoh-step-content">
+                        &Sigma; |x<sub>i</sub> &minus; x&#772;| = ${data.map(x => Math.abs(x - mean)).join(' + ')} = <strong>${jumlah}</strong>
+                    </div>
+                </div>
+
+                <div class="contoh-step">
+                    <div class="contoh-step-label">Langkah 5: Bagi (B)</div>
+                    <div class="contoh-step-content">
+                        SR = ${jumlah} &divide; ${n} = <strong>${sr}</strong>
+                    </div>
+                </div>
+
+                <div class="contoh-result">
+                    <div class="contoh-result-label">SIMPANGAN RATA-RATA</div>
+                    <div class="contoh-result-value">${sr}</div>
+                    <div class="contoh-result-desc">
+                        Rata-rata penjualan harian Toko Maju menyimpang
+                        <strong>${sr} juta</strong> dari rata-ratanya.
+                    </div>
+                </div>
+            `;
+        }
+
+        function nextSection() {
+            if (currentSection < sections.length - 1) {
+                currentSection++;
+                renderSection();
+            }
+        }
+
+        function prevSection() {
+            if (currentSection > 0) {
+                currentSection--;
+                renderSection();
+            }
+        }
+
+        async function selesaiMateri() {
+    if (!confirm('Yakin sudah selesai mempelajari materi?')) return;
+
+    Utils.showLoading('Menyimpan progress...');
+
+    try {
+        const user = Utils.getUser();
+
+        // Update flag materiSelesai = true
+        const result = await API.updateProgressFlag(user.id, 'materiSelesai', true);
+
+        Utils.hideLoading();
+
+        if (!result.success) {
+            Utils.toast('Gagal menyimpan: ' + (result.error || 'Unknown'));
+            return;
+        }
+
+        Utils.toast('Materi selesai! Lanjutkan ke LKPD atau Latihan.');
+        window.location.href = 'dashboard-siswa.html';
+    } catch (error) {
+        Utils.hideLoading();
+        Utils.toast('Error: ' + error.message);
+    }
+}
+
+        function confirmExit() {
+            window.location.href = 'dashboard-siswa.html';
+        }
+    </script>
+</body>
+</html>

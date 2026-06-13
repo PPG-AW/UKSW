@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#1E40AF">
+    <title>Login - Simpangan Rata-Rata</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .login-hero {
+            text-align: center;
+            padding: var(--space-xl) var(--space-md);
+            background: linear-gradient(135deg, var(--blue) 0%, var(--blue-dark) 100%);
+            color: var(--white);
+        }
+
+        .login-hero-icon {
+            width: 80px;
+            height: 80px;
+            background-color: rgba(255, 255, 255, 0.15);
+            border-radius: var(--radius-xl);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto var(--space-md);
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        .login-hero-title {
+            font-size: var(--text-2xl);
+            font-weight: 700;
+            margin-bottom: var(--space-xs);
+        }
+
+        .login-hero-subtitle {
+            font-size: var(--text-base);
+            opacity: 0.9;
+        }
+
+        .search-results {
+            margin-top: var(--space-sm);
+            background-color: var(--white);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--gray-300);
+            max-height: 280px;
+            overflow-y: auto;
+        }
+
+        .search-results-empty {
+            padding: var(--space-md);
+            text-align: center;
+            color: var(--gray-600);
+            font-size: var(--text-sm);
+        }
+
+        .search-result-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--space-md);
+            border-bottom: 1px solid var(--gray-200);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
+
+        .search-result-item:hover {
+            background-color: var(--primary-bg-soft);
+        }
+
+        .search-result-name {
+            font-weight: 500;
+            color: var(--gray-900);
+        }
+
+        .search-result-arrow {
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .divider-text {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            margin: var(--space-lg) 0;
+            color: var(--gray-500);
+            font-size: var(--text-sm);
+        }
+
+        .divider-text::before,
+        .divider-text::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background-color: var(--gray-300);
+        }
+
+        .guru-link {
+            text-align: center;
+            margin-top: var(--space-md);
+            font-size: var(--text-sm);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- HERO -->
+        <div class="login-hero">
+            <div class="login-hero-icon">SR</div>
+            <h1 class="login-hero-title">Simpangan Rata-Rata</h1>
+            <p class="login-hero-subtitle">Data Tunggal &middot; X Pemasaran</p>
+        </div>
+
+        <!-- LOGIN FORM -->
+        <main class="content">
+            <div class="card">
+                <h2 class="card-title">Masuk</h2>
+                <p class="card-subtitle">Cari nama Anda untuk masuk ke pembelajaran.</p>
+
+                <div class="input-group">
+                    <label class="input-label" for="search-input">Nama Lengkap</label>
+                    <input
+                        type="text"
+                        id="search-input"
+                        class="input"
+                        placeholder="Ketik minimal 2 huruf..."
+                        autocomplete="off"
+                    >
+                    <p class="input-helper">Ketik nama Anda untuk mencari di daftar siswa.</p>
+                </div>
+
+                <div id="search-results-container"></div>
+            </div>
+
+            <div class="divider-text">atau</div>
+
+            <div class="card text-center">
+                <h3 class="card-title">Belum Terdaftar?</h3>
+                <p class="card-subtitle">Daftar sekarang untuk memulai pembelajaran.</p>
+                <a href="register.html" class="btn btn-outline btn-block">
+                    Daftar Sebagai Siswa Baru
+                </a>
+            </div>
+
+            <div class="guru-link">
+                <a href="dashboard-guru.html">Masuk sebagai Guru</a>
+            </div>
+
+            <div class="alert alert-info mt-md">
+                <strong>Info:</strong> Aplikasi ini khusus untuk siswa kelas X Pemasaran
+                SMK Negeri 1 Salatiga.
+            </div>
+        </main>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Validasi dependency
+            if (typeof Utils === 'undefined' || typeof API === 'undefined' || typeof Auth === 'undefined') {
+                alert('Terjadi kesalahan memuat aplikasi. Silakan refresh halaman (Ctrl+F5).');
+                return;
+            }
+
+            // Jika sudah login, langsung redirect
+            if (Utils.isLoggedIn()) {
+                window.location.href = 'dashboard-siswa.html';
+                return;
+            }
+
+            const searchInput = document.getElementById('search-input');
+            const resultsContainer = document.getElementById('search-results-container');
+
+            let searchTimeout;
+            let currentResults = [];
+
+            searchInput.addEventListener('input', function(e) {
+                clearTimeout(searchTimeout);
+                const query = e.target.value;
+
+                searchTimeout = setTimeout(() => {
+                    searchAndRender(query);
+                }, 400);
+            });
+
+            async function searchAndRender(query) {
+                if (!query || query.trim().length < 2) {
+                    resultsContainer.innerHTML = '';
+                    return;
+                }
+
+                resultsContainer.innerHTML = `
+                    <div class="search-results">
+                        <div class="search-results-empty">Mencari...</div>
+                    </div>
+                `;
+
+                try {
+                    const result = await API.searchSiswa(query);
+
+                    if (!result.success) {
+                        resultsContainer.innerHTML = `
+                            <div class="search-results">
+                                <div class="search-results-empty">Error: ${result.error}</div>
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    currentResults = result.data;
+                    renderResults(result.data);
+                } catch (error) {
+                    resultsContainer.innerHTML = `
+                        <div class="search-results">
+                            <div class="search-results-empty">
+                                Gagal mencari: ${error.message}<br>
+                                <small>Pastikan koneksi internet aktif</small>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+
+            function renderResults(results) {
+                if (results.length === 0) {
+                    resultsContainer.innerHTML = `
+                        <div class="search-results">
+                            <div class="search-results-empty">
+                                Nama tidak ditemukan.<br>
+                                <a href="register.html">Daftar sebagai siswa baru</a>
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const itemsHtml = results.map(student => `
+                    <div class="search-result-item" data-id="${student.id}">
+                        <span class="search-result-name">${student.nama}</span>
+                        <span class="search-result-arrow">&rarr;</span>
+                    </div>
+                `).join('');
+
+                resultsContainer.innerHTML = `
+                    <div class="search-results">
+                        ${itemsHtml}
+                    </div>
+                `;
+
+                // Bind click event
+                resultsContainer.querySelectorAll('.search-result-item').forEach(item => {
+                    item.addEventListener('click', function() {
+                        const id = parseInt(this.dataset.id);
+                        const student = currentResults.find(s => parseInt(s.id) === id);
+                        if (student && confirm(`Masuk sebagai ${student.nama}?`)) {
+                            Auth.login(student);
+                        }
+                    });
+                });
+            }
+        });
+    </script>
+</body>
+</html>

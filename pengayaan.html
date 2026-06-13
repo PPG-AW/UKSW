@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#16A34A">
+    <title>Pengayaan</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .pengayaan-header {
+            background: linear-gradient(135deg, var(--success) 0%, #15803D 100%);
+            color: var(--white);
+            padding: var(--space-lg);
+            border-radius: var(--radius-lg);
+            margin-bottom: var(--space-md);
+        }
+
+        .kasus-card {
+            background-color: var(--white);
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            margin-bottom: var(--space-md);
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .kasus-card:hover {
+            border-color: var(--success);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .kasus-num {
+            background-color: var(--success);
+            color: var(--white);
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: var(--text-base);
+            margin-bottom: var(--space-sm);
+        }
+
+        .kasus-title {
+            font-size: var(--text-base);
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: var(--space-xs);
+        }
+
+        .kasus-desc {
+            font-size: var(--text-sm);
+            color: var(--gray-600);
+            line-height: 1.5;
+        }
+
+        .kasus-detail-card {
+            background-color: var(--yellow-bg);
+            border-left: 4px solid var(--yellow-dark);
+            padding: var(--space-md);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-md);
+        }
+
+        .konteks-judul {
+            font-size: var(--text-xs);
+            color: var(--yellow-dark);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: var(--space-xs);
+        }
+
+        .konteks-text {
+            font-size: var(--text-sm);
+            color: var(--gray-800);
+            line-height: 1.6;
+        }
+
+        .data-card {
+            background-color: var(--white);
+            padding: var(--space-md);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-sm);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .data-label {
+            font-size: var(--text-sm);
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: var(--space-xs);
+        }
+
+        .data-values {
+            font-family: var(--font-mono);
+            font-size: var(--text-base);
+            color: var(--gray-900);
+            background-color: var(--gray-100);
+            padding: var(--space-sm);
+            border-radius: var(--radius-sm);
+            text-align: center;
+        }
+
+        .data-unit {
+            font-size: var(--text-xs);
+            color: var(--gray-600);
+            margin-top: 4px;
+            text-align: center;
+        }
+
+        .calc-helper {
+            background-color: var(--primary-bg-soft);
+            padding: var(--space-md);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-md);
+            text-align: center;
+        }
+
+        .calc-helper-label {
+            font-size: var(--text-xs);
+            color: var(--primary);
+            font-weight: 700;
+            margin-bottom: var(--space-xs);
+        }
+
+        .calc-row {
+            display: flex;
+            justify-content: space-around;
+            font-family: var(--font-mono);
+            font-size: var(--text-sm);
+            margin-top: var(--space-sm);
+        }
+
+        .calc-value {
+            background-color: var(--white);
+            padding: 6px 12px;
+            border-radius: var(--radius-sm);
+            font-weight: 700;
+            color: var(--primary-dark);
+        }
+
+        .pertanyaan-box {
+            background-color: var(--white);
+            padding: var(--space-md);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-sm);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .pertanyaan-num {
+            display: inline-block;
+            background-color: var(--success);
+            color: var(--white);
+            width: 24px;
+            height: 24px;
+            border-radius: var(--radius-full);
+            text-align: center;
+            font-weight: 700;
+            font-size: var(--text-xs);
+            line-height: 24px;
+            margin-right: var(--space-sm);
+        }
+
+        .pertanyaan-text {
+            font-size: var(--text-sm);
+            color: var(--gray-900);
+            font-weight: 500;
+            margin-bottom: var(--space-sm);
+        }
+
+        .pertanyaan-input {
+            width: 100%;
+            min-height: 80px;
+            border: 2px solid var(--gray-300);
+            border-radius: var(--radius-sm);
+            padding: var(--space-sm);
+            font-family: inherit;
+            font-size: var(--text-sm);
+            resize: vertical;
+        }
+
+        .pertanyaan-input:focus {
+            outline: none;
+            border-color: var(--success);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <button class="app-header-back" onclick="handleBack()">
+                &larr; Kembali
+            </button>
+            <h1 class="app-header-title">Pengayaan</h1>
+            <p class="app-header-subtitle">Studi kasus aplikatif</p>
+        </header>
+
+        <main class="content" id="content">
+            <div class="spinner"></div>
+        </main>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/studi-kasus.js"></script>
+    <script>
+        let currentView = 'list'; // 'list' atau 'detail'
+        let currentKasus = null;
+        let user = null;
+
+        window.addEventListener('load', function() {
+            setTimeout(initApp, 200);
+        });
+
+        function initApp() {
+            if (!Utils.requireLogin()) return;
+            user = Utils.getUser();
+            renderListKasus();
+        }
+
+        function renderListKasus() {
+            currentView = 'list';
+
+            const kasusHtml = STUDI_KASUS.map(k => `
+                <div class="kasus-card" onclick="renderDetailKasus(${k.id})">
+                    <div class="kasus-num">${k.id}</div>
+                    <div class="kasus-title">${k.judul}</div>
+                    <div class="kasus-desc">${k.konteks.substring(0, 100)}...</div>
+                </div>
+            `).join('');
+
+            document.getElementById('content').innerHTML = `
+                <div class="pengayaan-header">
+                    <h2 style="margin-bottom: 4px; font-size: var(--text-lg);">
+                        Selamat! Anda Lulus Formatif
+                    </h2>
+                    <p style="font-size: var(--text-sm); opacity: 0.95;">
+                        Mari perdalam pemahaman dengan 3 studi kasus aplikatif di
+                        bidang pemasaran nyata.
+                    </p>
+                </div>
+
+                <div class="card">
+                    <h3 class="card-title">Pilih Studi Kasus</h3>
+                    <p class="card-body">
+                        Setiap kasus menguji kemampuan analisis dan pengambilan keputusan
+                        bisnis menggunakan simpangan rata-rata.
+                    </p>
+                </div>
+
+                ${kasusHtml}
+
+                <a href="dashboard-siswa.html" class="btn btn-secondary btn-block mt-md">
+                    Kembali ke Dashboard
+                </a>
+            `;
+            window.scrollTo(0, 0);
+        }
+
+        function renderDetailKasus(kasusId) {
+            currentView = 'detail';
+            currentKasus = STUDI_KASUS.find(k => k.id === kasusId);
+
+            // Render data dengan SR sudah dihitung
+            const dataHtml = currentKasus.data.map((d, i) => {
+                const stats = hitungSRDataset(d.values);
+                return `
+                    <div class="data-card">
+                        <div class="data-label">${d.label}</div>
+                        <div class="data-values">${d.values.join(' &nbsp; ')}</div>
+                        <div class="data-unit">${d.unit}</div>
+                        <div class="calc-helper" style="margin-top: var(--space-sm); margin-bottom: 0;">
+                            <div class="calc-helper-label">Perhitungan SR:</div>
+                            <div class="calc-row">
+                                <div>
+                                    <div style="font-size: var(--text-xs); color: var(--gray-600);">Rata-rata</div>
+                                    <div class="calc-value">${stats.mean}</div>
+                                </div>
+                                <div>
+                                    <div style="font-size: var(--text-xs); color: var(--gray-600);">SR</div>
+                                    <div class="calc-value">${stats.sr}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            const pertanyaanHtml = currentKasus.pertanyaan.map((p, i) => `
+                <div class="pertanyaan-box">
+                    <div class="pertanyaan-text">
+                        <span class="pertanyaan-num">${i+1}</span>${p}
+                    </div>
+                    <textarea
+                        class="pertanyaan-input"
+                        id="jawaban-${i}"
+                        placeholder="Tuliskan jawaban Anda..."></textarea>
+                </div>
+            `).join('');
+
+            document.getElementById('content').innerHTML = `
+                <div class="pengayaan-header">
+                    <h2 style="margin-bottom: 4px; font-size: var(--text-lg);">
+                        Studi Kasus ${currentKasus.id}
+                    </h2>
+                    <p style="font-size: var(--text-sm); opacity: 0.95;">
+                        ${currentKasus.judul}
+                    </p>
+                </div>
+
+                <div class="kasus-detail-card">
+                    <div class="konteks-judul">Konteks</div>
+                    <div class="konteks-text">${currentKasus.konteks}</div>
+                </div>
+
+                <h3 class="card-title">Data</h3>
+                ${dataHtml}
+
+                <h3 class="card-title mt-md">Pertanyaan Analisis</h3>
+                ${pertanyaanHtml}
+
+                <button class="btn btn-success btn-block btn-large mt-md" onclick="submitKasus()">
+                    Kirim Jawaban
+                </button>
+
+                <button class="btn btn-secondary btn-block mt-sm" onclick="renderListKasus()">
+                    Kembali ke Daftar Kasus
+                </button>
+            `;
+
+            window.scrollTo(0, 0);
+        }
+
+        async function submitKasus() {
+            // Ambil semua jawaban
+            const jawaban = {};
+            let semuaTerisi = true;
+
+            currentKasus.pertanyaan.forEach((p, i) => {
+                const val = document.getElementById(`jawaban-${i}`).value.trim();
+                jawaban[`jawaban_${i+1}`] = val;
+                if (!val) semuaTerisi = false;
+            });
+
+            if (!semuaTerisi) {
+                if (!confirm('Beberapa pertanyaan belum dijawab. Lanjut kirim?')) {
+                    return;
+                }
+            }
+
+            Utils.showLoading('Menyimpan jawaban...');
+
+            try {
+                const dataKasus = {
+                    kasusId: currentKasus.id,
+                    judul: currentKasus.judul,
+                    jawaban: jawaban
+                };
+
+                await API.saveAsesmen(
+                    user.id,
+                    'pengayaan',
+                    100, // Pengayaan dianggap selesai
+                    JSON.stringify(dataKasus),
+                    `Kasus ${currentKasus.id}: ${currentKasus.judul}`
+                );
+
+                Utils.hideLoading();
+                renderSuksesKirim();
+            } catch (e) {
+                Utils.hideLoading();
+                Utils.toast('Error: ' + e.message);
+            }
+        }
+
+        function renderSuksesKirim() {
+            document.getElementById('content').innerHTML = `
+                <div class="pengayaan-header">
+                    <h2 style="margin-bottom: 4px; font-size: var(--text-lg);">Terima Kasih!</h2>
+                    <p style="font-size: var(--text-sm); opacity: 0.95;">
+                        Jawaban Anda telah tersimpan.
+                    </p>
+                </div>
+
+                <div class="card text-center">
+                    <div style="width: 80px; height: 80px; background: var(--success-bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto var(--space-md); font-size: 36px; color: var(--success); font-weight: 800;">
+                        ✓
+                    </div>
+                    <h3 class="card-title">Jawaban Tersimpan</h3>
+                    <p class="card-body">
+                        Studi kasus Anda telah dikirim. Jawaban akan dinilai oleh guru
+                        menggunakan rubrik penalaran kritis.
+                    </p>
+                </div>
+
+                <button class="btn btn-success btn-block btn-large mt-md" onclick="renderListKasus()">
+                    Pilih Kasus Lain
+                </button>
+
+                <a href="refleksi.html" class="btn btn-primary btn-block mt-sm">
+                    Lanjut ke Refleksi
+                </a>
+
+                <a href="dashboard-siswa.html" class="btn btn-secondary btn-block mt-sm">
+                    Kembali ke Dashboard
+                </a>
+            `;
+            window.scrollTo(0, 0);
+        }
+
+        function handleBack() {
+            if (currentView === 'detail') {
+                if (confirm('Jawaban yang belum disimpan akan hilang. Yakin keluar?')) {
+                    renderListKasus();
+                }
+            } else {
+                window.location.href = 'dashboard-siswa.html';
+            }
+        }
+    </script>
+</body>
+</html>

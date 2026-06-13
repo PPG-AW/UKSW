@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#1E40AF">
+    <title>Asesmen Formatif</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .formatif-header {
+            background: linear-gradient(135deg, var(--blue) 0%, var(--blue-dark) 100%);
+            color: var(--white);
+            padding: var(--space-md);
+            border-radius: var(--radius-lg);
+            margin-bottom: var(--space-md);
+        }
+
+        .formatif-header-title {
+            font-size: var(--text-lg);
+            font-weight: 700;
+            margin-bottom: var(--space-xs);
+        }
+
+        .formatif-header-meta {
+            font-size: var(--text-sm);
+            opacity: 0.9;
+        }
+
+        .progress-soal {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--white);
+            padding: var(--space-sm) var(--space-md);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-md);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .progress-soal-label {
+            font-size: var(--text-sm);
+            color: var(--gray-700);
+            font-weight: 600;
+        }
+
+        .progress-soal-num {
+            background-color: var(--primary);
+            color: var(--white);
+            padding: 4px 12px;
+            border-radius: var(--radius-full);
+            font-size: var(--text-sm);
+            font-weight: 700;
+        }
+
+        .indikator-soal {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 4px;
+            margin-bottom: var(--space-md);
+        }
+
+        .indikator-dot {
+            height: 6px;
+            background-color: var(--gray-300);
+            border-radius: 3px;
+        }
+
+        .indikator-dot.answered {
+            background-color: var(--success);
+        }
+
+        .indikator-dot.current {
+            background-color: var(--primary);
+        }
+
+        .soal-card {
+            background-color: var(--white);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            margin-bottom: var(--space-md);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .soal-meta {
+            display: flex;
+            gap: var(--space-sm);
+            margin-bottom: var(--space-md);
+        }
+
+        .soal-topik {
+            background-color: var(--primary-bg-soft);
+            color: var(--primary-dark);
+            padding: 4px 12px;
+            border-radius: var(--radius-full);
+            font-size: var(--text-xs);
+            font-weight: 600;
+        }
+
+        .soal-bobot {
+            background-color: var(--yellow-bg);
+            color: var(--yellow-dark);
+            padding: 4px 12px;
+            border-radius: var(--radius-full);
+            font-size: var(--text-xs);
+            font-weight: 700;
+        }
+
+        .soal-pertanyaan {
+            font-size: var(--text-base);
+            color: var(--gray-900);
+            line-height: 1.6;
+            margin-bottom: var(--space-lg);
+            font-weight: 500;
+        }
+
+        .pilihan-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-sm);
+        }
+
+        .pilihan-item {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--space-md);
+            padding: var(--space-md);
+            border: 2px solid var(--gray-300);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: var(--transition);
+            background-color: var(--white);
+        }
+
+        .pilihan-item:hover {
+            border-color: var(--primary-light);
+            background-color: var(--primary-bg-soft);
+        }
+
+        .pilihan-item.selected {
+            border-color: var(--primary);
+            background-color: var(--primary-bg-soft);
+        }
+
+        .pilihan-label {
+            background-color: var(--gray-200);
+            color: var(--gray-800);
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: var(--text-sm);
+            flex-shrink: 0;
+        }
+
+        .pilihan-item.selected .pilihan-label {
+            background-color: var(--primary);
+            color: var(--white);
+        }
+
+        .pilihan-teks {
+            font-size: var(--text-sm);
+            color: var(--gray-800);
+            line-height: 1.5;
+            padding-top: 4px;
+        }
+
+        .nav-soal {
+            display: flex;
+            gap: var(--space-sm);
+            margin-top: var(--space-lg);
+        }
+
+        .warning-box {
+            background-color: var(--yellow-bg);
+            border-left: 4px solid var(--yellow-dark);
+            padding: var(--space-md);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-md);
+            font-size: var(--text-sm);
+            color: var(--gray-800);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <button class="app-header-back" onclick="confirmExit()">
+                &larr; Kembali
+            </button>
+            <h1 class="app-header-title">Asesmen Formatif</h1>
+            <p class="app-header-subtitle">10 soal &middot; target lulus: 75</p>
+        </header>
+
+        <main class="content" id="content">
+            <div class="spinner"></div>
+            <p class="text-center text-muted">Memuat soal...</p>
+        </main>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/soal-formatif.js"></script>
+    <script>
+        let currentSoal = 0;
+        let jawabanSiswa = [];
+
+        window.addEventListener('load', function() {
+            setTimeout(initApp, 200);
+        });
+
+        function initApp() {
+            if (typeof CONFIG === 'undefined' || typeof Utils === 'undefined' ||
+                typeof API === 'undefined' || typeof SOAL_FORMATIF === 'undefined') {
+                alert('Gagal memuat aplikasi. Refresh halaman.');
+                return;
+            }
+
+            if (!Utils.requireLogin()) return;
+
+            jawabanSiswa = new Array(SOAL_FORMATIF.length).fill(null);
+            renderIntro();
+        }
+
+        function renderIntro() {
+            document.getElementById('content').innerHTML = `
+                <div class="formatif-header">
+                    <div class="formatif-header-title">Asesmen Formatif</div>
+                    <div class="formatif-header-meta">
+                        Simpangan Rata-Rata Data Tunggal
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 class="card-title">Petunjuk Pengerjaan</h3>
+                    <ul style="margin: 0 0 0 20px; line-height: 1.8;">
+                        <li><strong>10 soal pilihan ganda</strong> dengan total skor 100</li>
+                        <li>Setiap soal memiliki <strong>bobot berbeda</strong> (5-15 poin)</li>
+                        <li>Target kelulusan: <strong>skor minimal 75</strong></li>
+                        <li>Jika skor di bawah 75 → diarahkan ke <strong>Remedial</strong></li>
+                        <li>Jika skor 75 atau lebih → diarahkan ke <strong>Pengayaan</strong></li>
+                        <li>Anda dapat kembali ke soal sebelumnya untuk mengubah jawaban</li>
+                    </ul>
+                </div>
+
+                <div class="warning-box">
+                    <strong>Tips:</strong> Kerjakan dengan tenang. Hitung di kertas
+                    untuk soal perhitungan, kemudian pilih jawaban yang sesuai.
+                </div>
+
+                <button class="btn btn-primary btn-block btn-large" onclick="mulaiFormatif()">
+                    Mulai Asesmen Formatif
+                </button>
+            `;
+        }
+
+        function mulaiFormatif() {
+            currentSoal = 0;
+            renderSoal();
+        }
+
+        function renderSoal() {
+            const soal = SOAL_FORMATIF[currentSoal];
+            const total = SOAL_FORMATIF.length;
+            const isLast = currentSoal === total - 1;
+            const isFirst = currentSoal === 0;
+
+            // Indikator dot
+            const dotsHtml = SOAL_FORMATIF.map((_, i) => {
+                let cls = 'indikator-dot';
+                if (i === currentSoal) cls += ' current';
+                else if (jawabanSiswa[i] !== null) cls += ' answered';
+                return `<div class="${cls}"></div>`;
+            }).join('');
+
+            // Pilihan
+            const pilihanHtml = soal.pilihan.map(p => {
+                const isSelected = jawabanSiswa[currentSoal] === p.label;
+                return `
+                    <div class="pilihan-item ${isSelected ? 'selected' : ''}" data-label="${p.label}">
+                        <div class="pilihan-label">${p.label}</div>
+                        <div class="pilihan-teks">${p.teks}</div>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('content').innerHTML = `
+                <div class="progress-soal">
+                    <span class="progress-soal-label">Soal</span>
+                    <span class="progress-soal-num">${currentSoal + 1} dari ${total}</span>
+                </div>
+
+                <div class="indikator-soal">
+                    ${dotsHtml}
+                </div>
+
+                <div class="soal-card">
+                    <div class="soal-meta">
+                        <span class="soal-topik">${soal.topik}</span>
+                        <span class="soal-bobot">${soal.bobot} poin</span>
+                    </div>
+
+                    <p class="soal-pertanyaan">${soal.pertanyaan}</p>
+
+                    <div class="pilihan-list">
+                        ${pilihanHtml}
+                    </div>
+                </div>
+
+                <div class="nav-soal">
+                    ${!isFirst ? `
+                        <button class="btn btn-secondary" onclick="prevSoal()" style="flex: 1;">
+                            &larr; Sebelumnya
+                        </button>
+                    ` : ''}
+
+                    ${!isLast ? `
+                        <button class="btn btn-primary" onclick="nextSoal()" style="flex: 1;">
+                            Selanjutnya &rarr;
+                        </button>
+                    ` : `
+                        <button class="btn btn-success" onclick="submitFormatif()" style="flex: 1;">
+                            Selesai &amp; Kirim
+                        </button>
+                    `}
+                </div>
+            `;
+
+            // Bind click pilihan
+            document.querySelectorAll('.pilihan-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const label = this.dataset.label;
+                    jawabanSiswa[currentSoal] = label;
+                    renderSoal();
+                });
+            });
+
+            window.scrollTo(0, 0);
+        }
+
+        function nextSoal() {
+            if (jawabanSiswa[currentSoal] === null) {
+                Utils.toast('Silakan pilih jawaban terlebih dahulu');
+                return;
+            }
+            if (currentSoal < SOAL_FORMATIF.length - 1) {
+                currentSoal++;
+                renderSoal();
+            }
+        }
+
+        function prevSoal() {
+            if (currentSoal > 0) {
+                currentSoal--;
+                renderSoal();
+            }
+        }
+
+        async function submitFormatif() {
+            // Cek apakah semua sudah dijawab
+            const belumDijawab = jawabanSiswa.findIndex(j => j === null);
+            if (belumDijawab !== -1) {
+                if (!confirm(`Soal nomor ${belumDijawab + 1} belum dijawab. Lanjut kirim?\n(Soal yang tidak dijawab dianggap salah)`)) {
+                    currentSoal = belumDijawab;
+                    renderSoal();
+                    return;
+                }
+            }
+
+            if (!confirm('Yakin kirim jawaban? Setelah dikirim tidak bisa diubah.')) {
+                return;
+            }
+
+            const hasil = hitungSkorFormatif(jawabanSiswa);
+            const status = tentukanStatus(hasil.totalSkor);
+
+            Utils.showLoading('Menyimpan hasil...');
+
+            try {
+                const user = Utils.getUser();
+                const jawabanString = JSON.stringify(jawabanSiswa);
+
+                const result = await API.saveAsesmen(
+                    user.id,
+                    'formatif',
+                    hasil.totalSkor,
+                    jawabanString,
+                    `Status: ${status}`
+                );
+
+                Utils.hideLoading();
+
+                if (!result.success) {
+                    Utils.toast('Gagal menyimpan: ' + (result.error || 'Unknown'));
+                    return;
+                }
+
+                // Simpan hasil ke localStorage
+                localStorage.setItem('formatif_hasil', JSON.stringify({
+                    skor: hasil.totalSkor,
+                    status: status,
+                    detail: hasil.detail,
+                    timestamp: Utils.timestamp()
+                }));
+
+                window.location.href = 'hasil-formatif.html';
+            } catch (e) {
+                Utils.hideLoading();
+                Utils.toast('Error: ' + e.message);
+            }
+        }
+
+        function confirmExit() {
+            const adaJawaban = jawabanSiswa.some(j => j !== null);
+            if (adaJawaban) {
+                if (confirm('Jawaban yang sudah diisi akan hilang. Yakin keluar?')) {
+                    window.location.href = 'dashboard-siswa.html';
+                }
+            } else {
+                window.location.href = 'dashboard-siswa.html';
+            }
+        }
+    </script>
+</body>
+</html>

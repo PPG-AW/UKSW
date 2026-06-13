@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#7C3AED">
+    <title>Refleksi - Simpangan Rata-Rata</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .refleksi-header {
+            background: linear-gradient(135deg, var(--mindful) 0%, #5B21B6 100%);
+            color: var(--white);
+            padding: var(--space-xl) var(--space-md);
+            text-align: center;
+            border-radius: var(--radius-lg);
+            margin-bottom: var(--space-md);
+        }
+
+        .refleksi-icon {
+            width: 60px;
+            height: 60px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto var(--space-md);
+            font-size: 28px;
+            font-weight: 800;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .refleksi-title {
+            font-size: var(--text-xl);
+            font-weight: 700;
+            margin-bottom: var(--space-xs);
+        }
+
+        .refleksi-subtitle {
+            font-size: var(--text-sm);
+            opacity: 0.9;
+            line-height: 1.5;
+        }
+
+        .pertanyaan-card {
+            background-color: var(--white);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            margin-bottom: var(--space-md);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .pertanyaan-num {
+            display: inline-block;
+            background-color: var(--mindful);
+            color: var(--white);
+            width: 28px;
+            height: 28px;
+            border-radius: var(--radius-full);
+            text-align: center;
+            line-height: 28px;
+            font-weight: 700;
+            font-size: var(--text-sm);
+            margin-right: var(--space-sm);
+        }
+
+        .pertanyaan-text {
+            display: inline;
+            font-size: var(--text-base);
+            color: var(--gray-900);
+            font-weight: 500;
+            line-height: 1.5;
+        }
+
+        .skala-options {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+            margin-top: var(--space-md);
+        }
+
+        .skala-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-sm) 4px;
+            border: 2px solid var(--gray-300);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: var(--transition);
+            background-color: var(--white);
+            text-align: center;
+            min-height: 70px;
+        }
+
+        .skala-option:hover {
+            border-color: var(--mindful);
+            background-color: var(--mindful-bg);
+        }
+
+        .skala-option.selected {
+            border-color: var(--mindful);
+            background-color: var(--mindful);
+            color: var(--white);
+        }
+
+        .skala-number {
+            font-size: var(--text-xl);
+            font-weight: 800;
+            margin-bottom: 4px;
+            color: var(--gray-500);
+        }
+
+        .skala-option.selected .skala-number {
+            color: var(--white);
+        }
+
+        .skala-label {
+            font-size: 10px;
+            color: var(--gray-700);
+            font-weight: 600;
+            line-height: 1.2;
+        }
+
+        .skala-option.selected .skala-label {
+            color: var(--white);
+        }
+
+        .catatan-card {
+            background-color: var(--white);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            margin-bottom: var(--space-md);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .catatan-label {
+            font-size: var(--text-base);
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: var(--space-xs);
+        }
+
+        .catatan-helper {
+            font-size: var(--text-xs);
+            color: var(--gray-600);
+            margin-bottom: var(--space-sm);
+        }
+
+        .catatan-textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: var(--space-md);
+            border: 2px solid var(--gray-300);
+            border-radius: var(--radius-md);
+            font-family: inherit;
+            font-size: var(--text-sm);
+            line-height: 1.5;
+            resize: vertical;
+            transition: var(--transition);
+        }
+
+        .catatan-textarea:focus {
+            outline: none;
+            border-color: var(--mindful);
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            background-color: var(--mindful-bg);
+            border-radius: var(--radius-md);
+            padding: var(--space-sm) var(--space-md);
+            margin-bottom: var(--space-md);
+            font-size: var(--text-sm);
+        }
+
+        .progress-info-label {
+            color: var(--mindful);
+            font-weight: 600;
+        }
+
+        .progress-info-num {
+            background-color: var(--mindful);
+            color: var(--white);
+            padding: 2px 10px;
+            border-radius: var(--radius-full);
+            font-weight: 700;
+            font-size: var(--text-xs);
+        }
+
+        /* ===== HASIL ===== */
+        .sukses-hero {
+            background: linear-gradient(135deg, var(--mindful) 0%, #5B21B6 100%);
+            color: var(--white);
+            padding: var(--space-2xl) var(--space-md);
+            text-align: center;
+            border-radius: var(--radius-lg);
+            margin-bottom: var(--space-md);
+        }
+
+        .sukses-icon {
+            width: 100px;
+            height: 100px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto var(--space-md);
+            font-size: 48px;
+            font-weight: 800;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .sukses-title {
+            font-size: var(--text-2xl);
+            font-weight: 800;
+            margin-bottom: var(--space-xs);
+        }
+
+        .sukses-subtitle {
+            font-size: var(--text-base);
+            opacity: 0.95;
+            line-height: 1.5;
+        }
+
+        .quote-card {
+            background-color: var(--white);
+            border-left: 4px solid var(--mindful);
+            padding: var(--space-lg);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-md);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .quote-text {
+            font-size: var(--text-base);
+            color: var(--gray-900);
+            line-height: 1.7;
+            font-style: italic;
+            margin-bottom: var(--space-sm);
+        }
+
+        .quote-author {
+            font-size: var(--text-sm);
+            color: var(--mindful);
+            font-weight: 700;
+            text-align: right;
+        }
+
+        .summary-skor {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-sm);
+            margin-bottom: var(--space-md);
+        }
+
+        .summary-item {
+            background-color: var(--white);
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .summary-label {
+            font-size: var(--text-xs);
+            color: var(--gray-600);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .summary-value {
+            font-size: var(--text-2xl);
+            font-weight: 800;
+            color: var(--mindful);
+            line-height: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <button class="app-header-back" onclick="confirmExit()">
+                &larr; Kembali
+            </button>
+            <h1 class="app-header-title">Refleksi</h1>
+            <p class="app-header-subtitle">Belajar bertumbuh setiap hari</p>
+        </header>
+
+        <main class="content" id="content">
+            <div class="spinner"></div>
+        </main>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script>
+        const PERTANYAAN_REFLEKSI = [
+            'Aku paham konsep simpangan rata-rata.',
+            'Aku bisa menghitung SR data tunggal dengan benar.',
+            'Aku paham penerapan SR dalam konteks bisnis pemasaran.',
+            'Aku menikmati pembelajaran hari ini.'
+        ];
+
+        const SKALA_LABEL = [
+            { value: 1, num: '1', label: 'Belum' },
+            { value: 2, num: '2', label: 'Ragu' },
+            { value: 3, num: '3', label: 'Setuju' },
+            { value: 4, num: '4', label: 'Sangat Setuju' }
+        ];
+
+        let jawabanRefleksi = new Array(PERTANYAAN_REFLEKSI.length).fill(null);
+        let user = null;
+
+        window.addEventListener('load', function() {
+            setTimeout(initApp, 200);
+        });
+
+        function initApp() {
+            if (typeof CONFIG === 'undefined' || typeof Utils === 'undefined' || typeof API === 'undefined') {
+                alert('Gagal memuat aplikasi. Refresh halaman.');
+                return;
+            }
+
+            if (!Utils.requireLogin()) return;
+            user = Utils.getUser();
+
+            renderForm();
+        }
+
+        function renderForm() {
+            const sudahDijawab = jawabanRefleksi.filter(j => j !== null).length;
+            const total = PERTANYAAN_REFLEKSI.length;
+
+            const pertanyaanHtml = PERTANYAAN_REFLEKSI.map((p, i) => {
+                const skalaHtml = SKALA_LABEL.map(s => {
+                    const isSelected = jawabanRefleksi[i] === s.value;
+                    return `
+                        <div class="skala-option ${isSelected ? 'selected' : ''}"
+                             data-pertanyaan="${i}"
+                             data-value="${s.value}">
+                            <div class="skala-number">${s.num}</div>
+                            <div class="skala-label">${s.label}</div>
+                        </div>
+                    `;
+                }).join('');
+
+                return `
+                    <div class="pertanyaan-card">
+                        <span class="pertanyaan-num">${i + 1}</span>
+                        <span class="pertanyaan-text">${p}</span>
+                        <div class="skala-options">
+                            ${skalaHtml}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('content').innerHTML = `
+                <div class="refleksi-header">
+                    <div class="refleksi-icon">?</div>
+                    <div class="refleksi-title">Refleksi Pembelajaran</div>
+                    <div class="refleksi-subtitle">
+                        Bagaimana perjalanan belajar Anda hari ini?<br>
+                        Jawab dengan jujur untuk pengembangan diri.
+                    </div>
+                </div>
+
+                <div class="progress-info">
+                    <span class="progress-info-label">Pertanyaan Terjawab</span>
+                    <span class="progress-info-num">${sudahDijawab} / ${total}</span>
+                </div>
+
+                ${pertanyaanHtml}
+
+                <div class="catatan-card">
+                    <div class="catatan-label">Catatan (Opsional)</div>
+                    <div class="catatan-helper">
+                        Apa yang sudah dipahami? Apa yang masih membingungkan?
+                        Apa harapan untuk pembelajaran selanjutnya?
+                    </div>
+                    <textarea
+                        class="catatan-textarea"
+                        id="catatan"
+                        placeholder="Tulis catatan Anda di sini..."></textarea>
+                </div>
+
+                <button class="btn btn-success btn-block btn-large" onclick="submitRefleksi()">
+                    Kirim Refleksi
+                </button>
+
+                <button class="btn btn-secondary btn-block mt-sm" onclick="window.location.href='dashboard-siswa.html'">
+                    Kembali ke Dashboard
+                </button>
+            `;
+
+            // Bind click ke skala options
+            document.querySelectorAll('.skala-option').forEach(opt => {
+                opt.addEventListener('click', function() {
+                    const idx = parseInt(this.dataset.pertanyaan);
+                    const val = parseInt(this.dataset.value);
+                    jawabanRefleksi[idx] = val;
+                    renderForm();
+                });
+            });
+        }
+
+        async function submitRefleksi() {
+            // Cek apakah semua dijawab
+            const belumDijawab = jawabanRefleksi.findIndex(j => j === null);
+            if (belumDijawab !== -1) {
+                if (!confirm(`Pertanyaan nomor ${belumDijawab + 1} belum dijawab. Tetap kirim?`)) {
+                    return;
+                }
+            }
+
+            const catatan = document.getElementById('catatan').value.trim();
+
+            Utils.showLoading('Menyimpan refleksi...');
+
+            try {
+                // Convert ke label string untuk Sheet
+                const labelMap = { 1: 'Belum', 2: 'Ragu', 3: 'Setuju', 4: 'Sangat Setuju' };
+
+                const result = await API.saveRefleksi(
+                    user.id,
+                    labelMap[jawabanRefleksi[0]] || '-',
+                    labelMap[jawabanRefleksi[1]] || '-',
+                    labelMap[jawabanRefleksi[2]] || '-',
+                    labelMap[jawabanRefleksi[3]] || '-'
+                );
+
+                Utils.hideLoading();
+
+                if (!result.success) {
+                    Utils.toast('Gagal menyimpan: ' + (result.error || 'Unknown'));
+                    return;
+                }
+
+                renderSukses(catatan);
+            } catch (e) {
+                Utils.hideLoading();
+                Utils.toast('Error: ' + e.message);
+            }
+        }
+
+        function renderSukses(catatan) {
+            // Hitung rata-rata skor refleksi
+            const validAnswers = jawabanRefleksi.filter(j => j !== null);
+            const rataRata = validAnswers.length > 0
+                ? (validAnswers.reduce((a, b) => a + b, 0) / validAnswers.length).toFixed(1)
+                : '0';
+
+            // Tentukan quote berdasarkan rata-rata
+            let quote = '';
+            if (parseFloat(rataRata) >= 3.5) {
+                quote = 'Kerja yang luar biasa! Anda telah menunjukkan pemahaman dan semangat belajar yang tinggi. Pertahankan dan terus tingkatkan!';
+            } else if (parseFloat(rataRata) >= 2.5) {
+                quote = 'Anda sudah pada jalur yang baik. Sedikit lagi usaha untuk menguatkan pemahaman, Anda pasti bisa!';
+            } else {
+                quote = 'Tidak apa-apa belum sepenuhnya paham. Belajar adalah proses. Coba pelajari ulang materi dengan tenang, Anda pasti bisa!';
+            }
+
+            document.getElementById('content').innerHTML = `
+                <div class="sukses-hero">
+                    <div class="sukses-icon">✓</div>
+                    <div class="sukses-title">Terima Kasih!</div>
+                    <div class="sukses-subtitle">
+                        Refleksi Anda telah tersimpan.<br>
+                        Pembelajaran hari ini telah lengkap.
+                    </div>
+                </div>
+
+                <div class="summary-skor">
+                    <div class="summary-item">
+                        <div class="summary-label">Pertanyaan</div>
+                        <div class="summary-value">${validAnswers.length}/4</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Rata-rata Skor</div>
+                        <div class="summary-value">${rataRata}</div>
+                    </div>
+                </div>
+
+                <div class="quote-card">
+                    <div class="quote-text">"${quote}"</div>
+                    <div class="quote-author">— Untuk Anda yang Hebat</div>
+                </div>
+
+                <div class="card">
+                    <h3 class="card-title">Pesan Penutup</h3>
+                    <p class="card-body" style="line-height: 1.7;">
+                        Rata-rata saja tidak cukup untuk mengenal data.
+                        Simpangan rata-rata membantu kita melihat lebih dalam.
+                        Sama seperti pembelajaran: <strong>belajar bukan soal sempurna,
+                        tapi soal bertumbuh setiap hari.</strong>
+                    </p>
+                </div>
+
+                ${catatan ? `
+                    <div class="card">
+                        <h3 class="card-title">Catatan Anda</h3>
+                        <p class="card-body" style="font-style: italic; color: var(--gray-700);">
+                            "${catatan}"
+                        </p>
+                    </div>
+                ` : ''}
+
+                <a href="dashboard-siswa.html" class="btn btn-primary btn-block btn-large mt-md">
+                    Kembali ke Dashboard
+                </a>
+            `;
+
+            window.scrollTo(0, 0);
+        }
+
+        function confirmExit() {
+            const adaJawaban = jawabanRefleksi.some(j => j !== null);
+            if (adaJawaban) {
+                if (confirm('Jawaban refleksi yang belum dikirim akan hilang. Yakin keluar?')) {
+                    window.location.href = 'dashboard-siswa.html';
+                }
+            } else {
+                window.location.href = 'dashboard-siswa.html';
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#1E40AF">
+    <title>Latihan Mandiri - SR</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .soal-header {
+            background: linear-gradient(135deg, var(--gray-800) 0%, var(--gray-900) 100%);
+            color: var(--white);
+            padding: var(--space-md);
+            border-radius: var(--radius-lg);
+            margin-bottom: var(--space-md);
+        }
+
+        .soal-progress {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: var(--text-sm);
+            opacity: 0.9;
+        }
+
+        .soal-progress-num {
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 4px 12px;
+            border-radius: var(--radius-full);
+            font-weight: 700;
+        }
+
+        .soal-konteks {
+            background-color: var(--white);
+            padding: var(--space-lg);
+            border-radius: var(--radius-lg);
+            margin-bottom: var(--space-md);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .konteks-judul {
+            font-size: var(--text-base);
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: var(--space-xs);
+        }
+
+        .konteks-desc {
+            font-size: var(--text-sm);
+            color: var(--gray-700);
+            line-height: 1.6;
+            margin-bottom: var(--space-md);
+        }
+
+        .data-soal {
+            font-family: var(--font-mono);
+            font-size: var(--text-xl);
+            font-weight: 700;
+            color: var(--primary-dark);
+            text-align: center;
+            background-color: var(--primary-bg-soft);
+            padding: var(--space-md);
+            border-radius: var(--radius-md);
+            border: 2px solid var(--primary-light);
+        }
+
+        .input-mandiri {
+            background-color: var(--white);
+            padding: var(--space-lg);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: var(--space-md);
+        }
+
+        .input-label {
+            display: block;
+            font-size: var(--text-base);
+            font-weight: 600;
+            color: var(--gray-800);
+            margin-bottom: var(--space-sm);
+        }
+
+        .input-mandiri-field {
+            width: 100%;
+            padding: var(--space-md);
+            border: 2px solid var(--gray-300);
+            border-radius: var(--radius-md);
+            font-family: var(--font-mono);
+            font-size: var(--text-xl);
+            font-weight: 700;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .input-mandiri-field:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .input-mandiri-field.correct {
+            border-color: var(--success);
+            background-color: var(--success-bg);
+            color: var(--success);
+        }
+
+        .input-mandiri-field.wrong {
+            border-color: var(--danger);
+            background-color: var(--red-bg);
+            color: var(--red-dark);
+        }
+
+        .input-helper {
+            font-size: var(--text-xs);
+            color: var(--gray-600);
+            margin-top: var(--space-xs);
+            text-align: center;
+        }
+
+        .feedback-mandiri {
+            padding: var(--space-md);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-md);
+            text-align: center;
+        }
+
+        .feedback-mandiri.benar {
+            background-color: var(--success-bg);
+            border: 2px solid var(--success);
+            color: var(--success);
+        }
+
+        .feedback-mandiri.salah {
+            background-color: var(--red-bg);
+            border: 2px solid var(--danger);
+            color: var(--red-dark);
+        }
+
+        .feedback-title {
+            font-size: var(--text-lg);
+            font-weight: 700;
+            margin-bottom: var(--space-xs);
+        }
+
+        .feedback-detail {
+            font-size: var(--text-sm);
+            color: var(--gray-700);
+            font-family: var(--font-mono);
+        }
+
+        .summary-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+            padding: var(--space-xl);
+            border-radius: var(--radius-lg);
+            text-align: center;
+        }
+
+        .summary-skor {
+            font-size: 48px;
+            font-weight: 800;
+            line-height: 1;
+            margin-bottom: var(--space-xs);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <button class="app-header-back" onclick="confirmExit()">
+                &larr; Kembali
+            </button>
+            <h1 class="app-header-title">Latihan Mandiri</h1>
+            <p class="app-header-subtitle">Tanpa hint, hanya jawaban akhir</p>
+        </header>
+
+        <main class="content" id="content">
+            <div class="spinner"></div>
+        </main>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/generator.js"></script>
+    <script>
+        const TOTAL_SOAL = 5;
+        let soalList = [];
+        let currentSoal = 0;
+        let skorList = [];
+        let user = null;
+
+        window.addEventListener('load', function() {
+            setTimeout(initApp, 200);
+        });
+
+        async function initApp() {
+            if (!Utils.requireLogin()) return;
+
+            user = Utils.getUser();
+
+            // Generate 5 soal medium
+            for (let i = 0; i < TOTAL_SOAL; i++) {
+                soalList.push(SoalGenerator.generate('medium'));
+            }
+
+            renderSoal();
+        }
+
+        function renderSoal() {
+            const soal = soalList[currentSoal];
+            const num = currentSoal + 1;
+
+            document.getElementById('content').innerHTML = `
+                <div class="soal-header">
+                    <div class="soal-progress">
+                        <span>Latihan Mandiri</span>
+                        <span class="soal-progress-num">Soal ${num}/${TOTAL_SOAL}</span>
+                    </div>
+                </div>
+
+                <div class="soal-konteks">
+                    <div class="konteks-judul">${soal.konteks.judul}</div>
+                    <div class="konteks-desc">${soal.konteks.deskripsi}</div>
+                    <div class="data-soal">${soal.data.join(' &nbsp; ')}</div>
+                </div>
+
+                <div class="input-mandiri">
+                    <label class="input-label">Simpangan Rata-Rata (SR) =</label>
+                    <input type="number" class="input-mandiri-field" id="jawaban-sr" step="0.01" placeholder="?">
+                    <div class="input-helper">Hitung di kertas, lalu masukkan jawaban akhir di sini</div>
+                </div>
+
+                <div id="feedback-container"></div>
+
+                <button class="btn btn-primary btn-block btn-large" id="btn-cek" onclick="cekJawaban()">
+                    Cek Jawaban
+                </button>
+            `;
+
+            window.scrollTo(0, 0);
+
+            // Auto focus
+            setTimeout(() => {
+                const input = document.getElementById('jawaban-sr');
+                if (input) input.focus();
+            }, 100);
+        }
+
+        function cekJawaban() {
+            const soal = soalList[currentSoal];
+            const jawaban = parseFloat(document.getElementById('jawaban-sr').value);
+
+            if (isNaN(jawaban)) {
+                Utils.toast('Silakan masukkan jawaban terlebih dahulu');
+                return;
+            }
+
+            const benar = Math.abs(jawaban - soal.sr) < 0.05;
+            const input = document.getElementById('jawaban-sr');
+            const container = document.getElementById('feedback-container');
+            const btn = document.getElementById('btn-cek');
+
+            input.classList.remove('correct', 'wrong');
+
+            if (benar) {
+                input.classList.add('correct');
+                skorList[currentSoal] = 100;
+
+                container.innerHTML = `
+                    <div class="feedback-mandiri benar">
+                        <div class="feedback-title">BENAR!</div>
+                        <div class="feedback-detail">SR = ${soal.sr}</div>
+                    </div>
+                `;
+            } else {
+                input.classList.add('wrong');
+                skorList[currentSoal] = 0;
+
+                // Tampilkan pembahasan
+                container.innerHTML = `
+                    <div class="feedback-mandiri salah">
+                        <div class="feedback-title">BELUM TEPAT</div>
+                        <div class="feedback-detail">
+                            Jawaban Anda: ${jawaban}<br>
+                            Jawaban benar: <strong>${soal.sr}</strong>
+                        </div>
+                        <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--red-light); font-size: var(--text-xs); text-align: left;">
+                            <strong>Pembahasan:</strong><br>
+                            x&#772; = ${soal.mean}<br>
+                            &Sigma;|x<sub>i</sub>-x&#772;| = ${soal.mutlak.join(' + ')} = ${soal.jumlahMutlak}<br>
+                            SR = ${soal.jumlahMutlak} &divide; ${soal.n} = ${soal.sr}
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Update button
+            btn.textContent = currentSoal < TOTAL_SOAL - 1
+                ? 'Lanjut Soal Berikutnya →'
+                : 'Lihat Hasil Akhir →';
+            btn.onclick = currentSoal < TOTAL_SOAL - 1
+                ? () => { currentSoal++; renderSoal(); }
+                : renderSummary;
+        }
+
+        async function renderSummary() {
+            const benarCount = skorList.filter(s => s === 100).length;
+            const totalSkor = Math.round((benarCount / TOTAL_SOAL) * 100);
+
+            document.getElementById('content').innerHTML = `
+                <div class="summary-card">
+                    <div style="font-size: var(--text-sm); opacity: 0.9; margin-bottom: var(--space-xs);">Skor Latihan Mandiri</div>
+                    <div class="summary-skor">${totalSkor}</div>
+                    <div style="font-size: var(--text-sm); opacity: 0.9;">${benarCount} dari ${TOTAL_SOAL} soal benar</div>
+                </div>
+
+                <div class="card mt-md">
+                    <h3 class="card-title">Detail Skor per Soal</h3>
+                    ${skorList.map((s, i) => `
+                        <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--gray-200);">
+                            <span>Soal ${i+1}</span>
+                            <strong style="color: ${s === 100 ? 'var(--success)' : 'var(--danger)'};">
+                                ${s === 100 ? 'Benar' : 'Salah'}
+                            </strong>
+                        </div>
+                    `).join('')}
+                </div>
+
+                <div class="alert ${totalSkor >= 75 ? 'alert-success' : 'alert-warning'} mt-md">
+                    ${totalSkor >= 75
+                        ? 'Bagus! Anda sudah siap untuk mengerjakan Asesmen Formatif.'
+                        : 'Skor masih di bawah 75. Sebaiknya pelajari ulang materi atau coba latihan lagi.'}
+                </div>
+
+                <button class="btn btn-success btn-block btn-large mt-md" onclick="selesaiLatihan()">
+                    Tandai Latihan Selesai
+                </button>
+
+                <button class="btn btn-outline btn-block mt-sm" onclick="window.location.reload()">
+                    Coba Lagi (Soal Baru)
+                </button>
+
+                <button class="btn btn-secondary btn-block mt-sm" onclick="window.location.href='dashboard-siswa.html'">
+                    Kembali ke Dashboard
+                </button>
+            `;
+
+            // Save skor mandiri
+            try {
+                await API.saveAsesmen(user.id, 'latihan-mandiri', totalSkor, '', `${benarCount}/${TOTAL_SOAL} benar`);
+            } catch (e) {
+                console.error('Save error:', e);
+            }
+        }
+
+        async function selesaiLatihan() {
+            Utils.showLoading('Menyimpan progress...');
+            try {
+                await API.updateProgressFlag(user.id, 'latihanSelesai', true);
+                Utils.hideLoading();
+                Utils.toast('Latihan selesai! Sekarang Anda bisa mengerjakan Asesmen Formatif.');
+                window.location.href = 'dashboard-siswa.html';
+            } catch (e) {
+                Utils.hideLoading();
+                Utils.toast('Error: ' + e.message);
+            }
+        }
+
+        function confirmExit() {
+            if (confirm('Yakin keluar? Progress latihan akan hilang.')) {
+                window.location.href = 'dashboard-siswa.html';
+            }
+        }
+    </script>
+</body>
+</html>

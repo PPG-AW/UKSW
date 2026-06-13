@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#1E40AF">
+    <title>Dashboard Guru - Simpangan Rata-Rata</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-sm);
+            margin-bottom: var(--space-md);
+        }
+
+        .stat-card {
+            background-color: var(--white);
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+            text-align: center;
+            border: 1px solid var(--gray-200);
+        }
+
+        .stat-value {
+            font-size: var(--text-2xl);
+            font-weight: 700;
+            color: var(--primary);
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: var(--text-xs);
+            color: var(--gray-600);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .level-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: var(--space-sm);
+            margin-bottom: var(--space-md);
+        }
+
+        .level-stat {
+            padding: var(--space-md);
+            border-radius: var(--radius-md);
+            text-align: center;
+            color: var(--white);
+        }
+
+        .level-stat.l1 { background-color: var(--red); }
+        .level-stat.l2 { background-color: var(--yellow-dark); }
+        .level-stat.l3 { background-color: var(--blue); }
+
+        .level-stat-value {
+            font-size: var(--text-2xl);
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        .level-stat-label {
+            font-size: var(--text-xs);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .siswa-table {
+            font-size: var(--text-xs);
+        }
+
+        .siswa-table th, .siswa-table td {
+            padding: 8px 6px;
+        }
+
+        .login-form-guru {
+            background-color: var(--white);
+            padding: var(--space-lg);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .pwd-info {
+            background-color: var(--yellow-bg);
+            border-left: 4px solid var(--yellow-dark);
+            padding: var(--space-md);
+            border-radius: var(--radius-sm);
+            font-size: var(--text-xs);
+            color: var(--gray-700);
+            margin-top: var(--space-md);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <button class="app-header-back" onclick="window.location.href='index.html'">
+                &larr; Kembali
+            </button>
+            <h1 class="app-header-title">Dashboard Guru</h1>
+            <p class="app-header-subtitle">Monitoring Kelas X Pemasaran</p>
+        </header>
+
+        <main class="content" id="content">
+            <!-- Login form akan dirender di sini -->
+        </main>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script>
+        // Password sederhana untuk akses guru (bisa diganti)
+        const GURU_PASSWORD = 'guru2026';
+        const GURU_SESSION_KEY = 'guru_authenticated';
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Cek apakah sudah login sebagai guru
+            if (sessionStorage.getItem(GURU_SESSION_KEY) === 'true') {
+                loadDashboard();
+            } else {
+                renderLoginForm();
+            }
+        });
+
+        function renderLoginForm() {
+            document.getElementById('content').innerHTML = `
+                <div class="login-form-guru">
+                    <h2 class="card-title">Akses Guru</h2>
+                    <p class="card-subtitle">Masukkan password untuk mengakses dashboard guru.</p>
+
+                    <div class="input-group">
+                        <label class="input-label">Password</label>
+                        <input type="password" id="pwd-input" class="input" placeholder="Masukkan password" autocomplete="off">
+                    </div>
+
+                    <button class="btn btn-primary btn-block" id="btn-guru-login">
+                        Masuk Dashboard Guru
+                    </button>
+
+                    <div class="pwd-info">
+                        <strong>Info:</strong> Password default adalah <code>guru2026</code>.
+                        Sebaiknya diganti melalui file <code>dashboard-guru.html</code> sebelum diberikan ke siswa.
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('btn-guru-login').addEventListener('click', function() {
+                const pwd = document.getElementById('pwd-input').value;
+                if (pwd === GURU_PASSWORD) {
+                    sessionStorage.setItem(GURU_SESSION_KEY, 'true');
+                    loadDashboard();
+                } else {
+                    Utils.toast('Password salah');
+                }
+            });
+
+            // Enter key
+            document.getElementById('pwd-input').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    document.getElementById('btn-guru-login').click();
+                }
+            });
+        }
+
+        async function loadDashboard() {
+            document.getElementById('content').innerHTML = `
+                <div class="spinner"></div>
+                <p class="text-center text-muted">Memuat data dashboard...</p>
+            `;
+
+            try {
+                const result = await API.getDashboardGuru();
+
+                if (!result.success) {
+                    document.getElementById('content').innerHTML = `
+                        <div class="alert alert-danger">
+                            Gagal memuat data: ${result.error}
+                        </div>
+                    `;
+                    return;
+                }
+
+                renderDashboard(result.data);
+            } catch (error) {
+                document.getElementById('content').innerHTML = `
+                    <div class="alert alert-danger">
+                        Gagal koneksi: ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        function renderDashboard(data) {
+            const { siswa, stats } = data;
+
+            const statusMap = {
+                'belum_mulai': { label: 'Belum', class: 'status-belum' },
+                'sedang_belajar': { label: 'Belajar', class: 'status-progress' },
+                'lulus': { label: 'Lulus', class: 'status-lulus' },
+                'remedial': { label: 'Remedial', class: 'status-remedial' }
+            };
+
+            // Render table siswa
+            const tableRows = siswa.map(s => {
+                const status = statusMap[s.status] || statusMap['belum_mulai'];
+                return `
+                    <tr>
+                        <td>${s.nama}</td>
+                        <td class="text-center">${s.level}</td>
+                        <td class="text-center">${s.skorDiagnostik}</td>
+                        <td class="text-center">${s.skorFormatif}</td>
+                        <td class="text-center">
+                            <span class="status-pill ${status.class}">${status.label}</span>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            document.getElementById('content').innerHTML = `
+                <!-- STATS UMUM -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value">${stats.totalSiswa}</div>
+                        <div class="stat-label">Total Siswa</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${stats.sudahDiagnostik}</div>
+                        <div class="stat-label">Sudah Diagnostik</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${stats.sudahFormatif}</div>
+                        <div class="stat-label">Sudah Formatif</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value text-success">${stats.lulus}</div>
+                        <div class="stat-label">Lulus</div>
+                    </div>
+                </div>
+
+                <!-- LEVEL STATS -->
+                <h3 class="card-title mb-sm">Distribusi Level Siswa</h3>
+                <div class="level-stats">
+                    <div class="level-stat l1">
+                        <div class="level-stat-value">${stats.level1}</div>
+                        <div class="level-stat-label">Level 1</div>
+                    </div>
+                    <div class="level-stat l2">
+                        <div class="level-stat-value">${stats.level2}</div>
+                        <div class="level-stat-label">Level 2</div>
+                    </div>
+                    <div class="level-stat l3">
+                        <div class="level-stat-value">${stats.level3}</div>
+                        <div class="level-stat-label">Level 3</div>
+                    </div>
+                </div>
+
+                <!-- DAFTAR SISWA -->
+                <div class="card">
+                    <h3 class="card-title mb-sm">Daftar Siswa &amp; Progress</h3>
+                    <div class="table-wrapper">
+                        <table class="table siswa-table">
+                            <thead>
+                                <tr>
+                                    <th>Nama</th>
+                                    <th class="text-center">Lv</th>
+                                    <th class="text-center">Diag.</th>
+                                    <th class="text-center">Form.</th>
+                                    <th class="text-center">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${tableRows}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- ACTIONS -->
+                <button class="btn btn-primary btn-block mt-md" onclick="loadDashboard()">
+                    Refresh Data
+                </button>
+
+                <button class="btn btn-secondary btn-block mt-sm" onclick="logoutGuru()">
+                    Keluar
+                </button>
+
+                <p class="text-center text-muted text-xs mt-md">
+                    Update terakhir: ${new Date().toLocaleString('id-ID')}
+                </p>
+            `;
+        }
+
+        function logoutGuru() {
+            if (confirm('Keluar dari dashboard guru?')) {
+                sessionStorage.removeItem(GURU_SESSION_KEY);
+                window.location.href = 'index.html';
+            }
+        }
+    </script>
+</body>
+</html>

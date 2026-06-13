@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#1E40AF">
+    <title>LKPD - Simpangan Rata-Rata</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* ===== LKPD STYLES ===== */
+
+        .lkpd-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+            padding: var(--space-lg);
+            border-radius: var(--radius-lg);
+            margin-bottom: var(--space-md);
+        }
+
+        .lkpd-header.level-1 {
+            background: linear-gradient(135deg, var(--red) 0%, var(--red-dark) 100%);
+        }
+        .lkpd-header.level-2 {
+            background: linear-gradient(135deg, var(--yellow-dark) 0%, #B45309 100%);
+        }
+        .lkpd-header.level-3 {
+            background: linear-gradient(135deg, var(--blue) 0%, var(--blue-dark) 100%);
+        }
+
+        .lkpd-badge {
+            display: inline-block;
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 4px 12px;
+            border-radius: var(--radius-full);
+            font-size: var(--text-xs);
+            font-weight: 700;
+            margin-bottom: var(--space-sm);
+        }
+
+        .lkpd-title {
+            font-size: var(--text-xl);
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .lkpd-subtitle {
+            font-size: var(--text-sm);
+            opacity: 0.9;
+        }
+
+        .konteks-card {
+            background-color: var(--yellow-bg);
+            border-left: 4px solid var(--yellow-dark);
+            padding: var(--space-md);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-md);
+        }
+
+        .konteks-label {
+            font-size: var(--text-xs);
+            color: var(--yellow-dark);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: var(--space-xs);
+        }
+
+        .konteks-text {
+            font-size: var(--text-sm);
+            color: var(--gray-800);
+            line-height: 1.6;
+        }
+
+        .data-display {
+            background-color: var(--white);
+            border: 2px solid var(--primary);
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+            text-align: center;
+            margin-bottom: var(--space-md);
+        }
+
+        .data-label {
+            font-size: var(--text-xs);
+            color: var(--gray-600);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: var(--space-xs);
+        }
+
+        .data-values {
+            font-family: var(--font-mono);
+            font-size: var(--text-xl);
+            font-weight: 700;
+            color: var(--primary-dark);
+        }
+
+        .langkah-card {
+            background-color: var(--white);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            margin-bottom: var(--space-md);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .langkah-header {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            margin-bottom: var(--space-md);
+            padding-bottom: var(--space-sm);
+            border-bottom: 2px solid var(--gray-200);
+        }
+
+        .langkah-num {
+            background-color: var(--primary);
+            color: var(--white);
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: var(--text-lg);
+            flex-shrink: 0;
+        }
+
+        .langkah-info {
+            flex: 1;
+        }
+
+        .langkah-letter {
+            font-size: var(--text-xs);
+            color: var(--primary);
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .langkah-title {
+            font-size: var(--text-base);
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        .hint-box {
+            background-color: var(--primary-bg-soft);
+            border-left: 4px solid var(--primary);
+            padding: var(--space-sm) var(--space-md);
+            border-radius: var(--radius-sm);
+            margin-bottom: var(--space-md);
+            font-size: var(--text-sm);
+            color: var(--gray-700);
+        }
+
+        .hint-label {
+            font-size: var(--text-xs);
+            font-weight: 700;
+            color: var(--primary);
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .input-isi {
+            border: 2px solid var(--gray-300);
+            border-radius: var(--radius-sm);
+            padding: 8px 12px;
+            font-family: var(--font-mono);
+            font-size: var(--text-base);
+            font-weight: 600;
+            text-align: center;
+            width: 80px;
+            transition: var(--transition);
+        }
+
+        .input-isi:focus {
+            outline: none;
+            border-color: var(--primary);
+            background-color: var(--primary-bg-soft);
+        }
+
+        .input-isi.correct {
+            border-color: var(--success);
+            background-color: var(--success-bg);
+            color: var(--success);
+        }
+
+        .input-isi.wrong {
+            border-color: var(--danger);
+            background-color: var(--red-bg);
+            color: var(--red-dark);
+        }
+
+        .perhitungan-line {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            flex-wrap: wrap;
+            font-family: var(--font-mono);
+            font-size: var(--text-base);
+            padding: var(--space-sm);
+            background-color: var(--gray-100);
+            border-radius: var(--radius-sm);
+            margin-bottom: var(--space-sm);
+        }
+
+        .perhitungan-line.large {
+            font-size: var(--text-lg);
+        }
+
+        .tabel-lkpd {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: var(--font-mono);
+            font-size: var(--text-sm);
+            margin-bottom: var(--space-md);
+        }
+
+        .tabel-lkpd th,
+        .tabel-lkpd td {
+            border: 1px solid var(--gray-400);
+            padding: 8px;
+            text-align: center;
+        }
+
+        .tabel-lkpd th {
+            background-color: var(--primary);
+            color: var(--white);
+            font-weight: 700;
+        }
+
+        .tabel-lkpd input {
+            width: 60px;
+            padding: 4px;
+            border: 1px solid var(--gray-300);
+            border-radius: 4px;
+            text-align: center;
+            font-family: var(--font-mono);
+            font-size: var(--text-sm);
+        }
+
+        .tabel-lkpd input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background-color: var(--primary-bg-soft);
+        }
+
+        .tabel-lkpd tr.total {
+            background-color: var(--yellow-bg);
+            font-weight: 700;
+        }
+
+        .pertanyaan-analisis {
+            background-color: var(--gray-100);
+            padding: var(--space-md);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-md);
+        }
+
+        .pertanyaan-label {
+            font-size: var(--text-sm);
+            font-weight: 700;
+            color: var(--gray-800);
+            margin-bottom: var(--space-sm);
+        }
+
+        .pertanyaan-input {
+            width: 100%;
+            min-height: 80px;
+            border: 2px solid var(--gray-300);
+            border-radius: var(--radius-sm);
+            padding: var(--space-sm);
+            font-family: inherit;
+            font-size: var(--text-sm);
+            resize: vertical;
+        }
+
+        .pertanyaan-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .hasil-final {
+            background: linear-gradient(135deg, var(--success-bg) 0%, #BBF7D0 100%);
+            border: 2px solid var(--success);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            text-align: center;
+            margin-bottom: var(--space-md);
+        }
+
+        .hasil-final-label {
+            font-size: var(--text-xs);
+            color: var(--success);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: var(--space-xs);
+        }
+
+        .hasil-final-value {
+            font-size: var(--text-3xl);
+            font-weight: 800;
+            color: var(--success);
+            line-height: 1;
+            margin-bottom: var(--space-xs);
+        }
+
+        .hasil-final-desc {
+            font-size: var(--text-sm);
+            color: var(--gray-700);
+            margin-top: var(--space-sm);
+        }
+
+        .feedback-correct {
+            color: var(--success);
+            font-size: var(--text-xs);
+            margin-top: 4px;
+            display: none;
+        }
+
+        .feedback-correct.show {
+            display: block;
+        }
+
+        .feedback-wrong {
+            color: var(--danger);
+            font-size: var(--text-xs);
+            margin-top: 4px;
+            display: none;
+        }
+
+        .feedback-wrong.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <button class="app-header-back" onclick="confirmExit()">
+                &larr; Kembali
+            </button>
+            <h1 class="app-header-title">LKPD</h1>
+            <p class="app-header-subtitle">Lembar Kerja Peserta Didik</p>
+        </header>
+
+        <main class="content" id="content">
+            <div class="spinner"></div>
+            <p class="text-center text-muted">Memuat LKPD...</p>
+        </main>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script>
+        // Data Toko Berkah (sesuai materi)
+        const DATA_BERKAH = [3, 5, 7, 9, 11];
+
+        // Kunci jawaban Toko Berkah
+        const KUNCI_BERKAH = {
+            jumlah_x: 35,
+            mean: 7,
+            selisih: [-4, -2, 0, 2, 4],
+            mutlak: [4, 2, 0, 2, 4],
+            jumlah_mutlak: 12,
+            sr: 2.4
+        };
+
+        // Data Toko Maju (untuk perbandingan Level 3)
+        const DATA_MAJU = [4, 7, 8, 11, 15];
+        const SR_MAJU = 3.2;
+
+        let userLevel = 2;
+        let user = null;
+
+        window.addEventListener('load', function() {
+            setTimeout(initApp, 200);
+        });
+
+        async function initApp() {
+            if (typeof CONFIG === 'undefined' || typeof Utils === 'undefined' ||
+                typeof API === 'undefined') {
+                alert('Gagal memuat aplikasi. Refresh halaman.');
+                return;
+            }
+
+            if (!Utils.requireLogin()) return;
+
+            user = Utils.getUser();
+
+            // Fetch level
+            try {
+                const result = await API.getProgress(user.id);
+                if (result.success && result.data.level) {
+                    userLevel = parseInt(result.data.level);
+                }
+            } catch (e) {
+                console.error('Error fetching level:', e);
+            }
+
+            renderLKPD();
+        }
+
+        function renderLKPD() {
+            const levelName = userLevel === 1 ? 'Terbimbing Penuh'
+                            : userLevel === 2 ? 'Petunjuk Ringkas'
+                            : 'Tantangan & Analisis';
+
+            let html = `
+                <div class="lkpd-header level-${userLevel}">
+                    <span class="lkpd-badge">Level ${userLevel} &middot; ${levelName}</span>
+                    <div class="lkpd-title">Studi Kasus Toko Berkah</div>
+                    <div class="lkpd-subtitle">Analisis konsistensi penjualan</div>
+                </div>
+
+                <div class="konteks-card">
+                    <div class="konteks-label">Konteks</div>
+                    <div class="konteks-text">
+                        Toko Berkah adalah cabang retail yang ingin mengevaluasi
+                        konsistensi penjualan hariannya. Pemilik toko meminta
+                        bantuan kalian untuk menghitung simpangan rata-rata dari
+                        data penjualan selama 5 hari, kemudian memberikan
+                        kesimpulan tentang seberapa stabil penjualan toko ini.
+                    </div>
+                </div>
+
+                <div class="data-display">
+                    <div class="data-label">Data Penjualan (juta rupiah)</div>
+                    <div class="data-values">${DATA_BERKAH.join(' &nbsp; ')}</div>
+                </div>
+            `;
+
+            // Render konten sesuai level
+            if (userLevel === 1) {
+                html += renderLevel1();
+            } else if (userLevel === 2) {
+                html += renderLevel2();
+            } else {
+                html += renderLevel3();
+            }
+
+            // Tombol submit
+            html += `
+                <button class="btn btn-success btn-block btn-large mt-md" onclick="submitLKPD()">
+                    Selesai &amp; Kirim Jawaban
+                </button>
+
+                <button class="btn btn-outline btn-block mt-sm" onclick="cekJawaban()">
+                    Cek Jawaban Sekarang
+                </button>
+            `;
+
+            document.getElementById('content').innerHTML = html;
+        }
+
+        // ===== LEVEL 1: TERBIMBING PENUH =====
+        function renderLevel1() {
+            return `
+                <!-- LANGKAH 1: RATA-RATA -->
+                <div class="langkah-card">
+                    <div class="langkah-header">
+                        <div class="langkah-num">1</div>
+                        <div class="langkah-info">
+                            <div class="langkah-letter">R - RATA-RATA</div>
+                            <div class="langkah-title">Hitung Rata-rata</div>
+                        </div>
+                    </div>
+
+                    <div class="hint-box">
+                        <div class="hint-label">Hint:</div>
+                        Jumlahkan semua data, lalu bagi dengan banyak data (n=5).
+                    </div>
+
+                    <div class="perhitungan-line">
+                        3 + 5 + 7 + 9 + 11 =
+                        <input type="number" class="input-isi" id="jumlah-x" data-key="jumlah_x">
+                    </div>
+
+                    <div class="perhitungan-line large">
+                        x&#772; =
+                        <input type="number" class="input-isi" id="jumlah-x-2" data-key="jumlah_x" readonly>
+                        &divide; 5 =
+                        <input type="number" class="input-isi" id="mean" data-key="mean" step="0.1">
+                    </div>
+                </div>
+
+                <!-- LANGKAH 2-3: TABEL -->
+                <div class="langkah-card">
+                    <div class="langkah-header">
+                        <div class="langkah-num">2-3</div>
+                        <div class="langkah-info">
+                            <div class="langkah-letter">S - SELISIH &amp; M - MUTLAK</div>
+                            <div class="langkah-title">Isi Tabel Perhitungan</div>
+                        </div>
+                    </div>
+
+                    <div class="hint-box">
+                        <div class="hint-label">Hint:</div>
+                        Kolom 3 = x<sub>i</sub> - 7 (rata-rata). Kolom 4 = nilai mutlak kolom 3.
+                    </div>
+
+                    <table class="tabel-lkpd">
+                        <thead>
+                            <tr>
+                                <th>Hari</th>
+                                <th>x<sub>i</sub></th>
+                                <th>x<sub>i</sub> &minus; x&#772;</th>
+                                <th>|x<sub>i</sub> &minus; x&#772;|</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${DATA_BERKAH.map((x, i) => `
+                                <tr>
+                                    <td>${i + 1}</td>
+                                    <td>${x}</td>
+                                    <td><input type="number" data-row="${i}" data-col="selisih" step="1"></td>
+                                    <td><input type="number" data-row="${i}" data-col="mutlak" step="1" min="0"></td>
+                                </tr>
+                            `).join('')}
+                            <tr class="total">
+                                <td colspan="3">JUMLAH</td>
+                                <td><input type="number" id="jumlah-mutlak" data-key="jumlah_mutlak"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- LANGKAH 5: SR -->
+                <div class="langkah-card">
+                    <div class="langkah-header">
+                        <div class="langkah-num">5</div>
+                        <div class="langkah-info">
+                            <div class="langkah-letter">B - BAGI</div>
+                            <div class="langkah-title">Hitung Simpangan Rata-Rata</div>
+                        </div>
+                    </div>
+
+                    <div class="hint-box">
+                        <div class="hint-label">Hint:</div>
+                        SR = Jumlah nilai mutlak &divide; banyak data
+                    </div>
+
+                    <div class="perhitungan-line large">
+                        SR =
+                        <input type="number" class="input-isi" id="jumlah-mutlak-2" data-key="jumlah_mutlak" readonly>
+                        &divide; 5 =
+                        <input type="number" class="input-isi" id="sr" data-key="sr" step="0.1">
+                    </div>
+                </div>
+            `;
+        }
+
+        // ===== LEVEL 2: PETUNJUK RINGKAS =====
+        function renderLevel2() {
+            return `
+                <div class="langkah-card">
+                    <div class="langkah-header">
+                        <div class="langkah-num">R-S-M-J-B</div>
+                        <div class="langkah-info">
+                            <div class="langkah-letter">LANGKAH PERHITUNGAN</div>
+                            <div class="langkah-title">Selesaikan Semua Langkah</div>
+                        </div>
+                    </div>
+
+                    <div class="hint-box">
+                        <div class="hint-label">Rumus:</div>
+                        SR = &Sigma;|x<sub>i</sub> &minus; x&#772;| &divide; n
+                    </div>
+
+                    <p style="font-size: var(--text-sm); color: var(--gray-700); margin-bottom: var(--space-md);">
+                        <strong>Rata-rata (x&#772;) = </strong>
+                        <input type="number" class="input-isi" id="mean" data-key="mean" step="0.1">
+                    </p>
+
+                    <table class="tabel-lkpd">
+                        <thead>
+                            <tr>
+                                <th>Hari</th>
+                                <th>x<sub>i</sub></th>
+                                <th>x<sub>i</sub> &minus; x&#772;</th>
+                                <th>|x<sub>i</sub> &minus; x&#772;|</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${DATA_BERKAH.map((x, i) => `
+                                <tr>
+                                    <td>${i + 1}</td>
+                                    <td>${x}</td>
+                                    <td><input type="number" data-row="${i}" data-col="selisih" step="1"></td>
+                                    <td><input type="number" data-row="${i}" data-col="mutlak" step="1" min="0"></td>
+                                </tr>
+                            `).join('')}
+                            <tr class="total">
+                                <td colspan="3">JUMLAH</td>
+                                <td><input type="number" id="jumlah-mutlak" data-key="jumlah_mutlak"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="perhitungan-line large">
+                        <strong>SR = </strong>
+                        <input type="number" class="input-isi" id="sr" data-key="sr" step="0.1">
+                    </div>
+                </div>
+            `;
+        }
+
+        // ===== LEVEL 3: TANTANGAN & ANALISIS =====
+        function renderLevel3() {
+            return `
+                <div class="langkah-card">
+                    <div class="langkah-header">
+                        <div class="langkah-num">A</div>
+                        <div class="langkah-info">
+                            <div class="langkah-letter">BAGIAN 1</div>
+                            <div class="langkah-title">Hitung SR Toko Berkah</div>
+                        </div>
+                    </div>
+
+                    <table class="tabel-lkpd">
+                        <thead>
+                            <tr>
+                                <th>Hari</th>
+                                <th>x<sub>i</sub></th>
+                                <th>x<sub>i</sub> &minus; x&#772;</th>
+                                <th>|x<sub>i</sub> &minus; x&#772;|</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${DATA_BERKAH.map((x, i) => `
+                                <tr>
+                                    <td>${i + 1}</td>
+                                    <td>${x}</td>
+                                    <td><input type="number" data-row="${i}" data-col="selisih" step="1"></td>
+                                    <td><input type="number" data-row="${i}" data-col="mutlak" step="1" min="0"></td>
+                                </tr>
+                            `).join('')}
+                            <tr class="total">
+                                <td colspan="3">JUMLAH</td>
+                                <td><input type="number" id="jumlah-mutlak" data-key="jumlah_mutlak"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="perhitungan-line large">
+                        x&#772; =
+                        <input type="number" class="input-isi" id="mean" data-key="mean" step="0.1">
+                        &nbsp;&nbsp;
+                        SR =
+                        <input type="number" class="input-isi" id="sr" data-key="sr" step="0.1">
+                    </div>
+                </div>
+
+                <div class="langkah-card">
+                    <div class="langkah-header">
+                        <div class="langkah-num">B</div>
+                        <div class="langkah-info">
+                            <div class="langkah-letter">BAGIAN 2</div>
+                            <div class="langkah-title">Bandingkan dengan Toko Maju</div>
+                        </div>
+                    </div>
+
+                    <div class="hint-box">
+                        <div class="hint-label">Data Toko Maju (dari materi I Do):</div>
+                        Data: 4, 7, 8, 11, 15 &middot; Rata-rata = 9 &middot; SR = 3,2
+                    </div>
+
+                    <div class="pertanyaan-analisis">
+                        <div class="pertanyaan-label">
+                            1. Toko mana yang lebih konsisten penjualannya? Mengapa?
+                        </div>
+                        <textarea class="pertanyaan-input" id="analisis-1"
+                            placeholder="Tuliskan analisis Anda di sini..."></textarea>
+                    </div>
+
+                    <div class="pertanyaan-analisis">
+                        <div class="pertanyaan-label">
+                            2. Jika Anda investor, toko mana yang lebih Anda pilih?
+                            Berikan alasan dari sisi risiko dan stabilitas.
+                        </div>
+                        <textarea class="pertanyaan-input" id="analisis-2"
+                            placeholder="Tuliskan jawaban Anda..."></textarea>
+                    </div>
+
+                    <div class="pertanyaan-analisis">
+                        <div class="pertanyaan-label">
+                            3. Rekomendasi apa yang akan Anda berikan kepada pemilik
+                            toko yang penjualannya kurang konsisten?
+                        </div>
+                        <textarea class="pertanyaan-input" id="analisis-3"
+                            placeholder="Tuliskan rekomendasi Anda..."></textarea>
+                    </div>
+                </div>
+            `;
+        }
+
+        // ===== CEK JAWABAN =====
+        function cekJawaban() {
+            let totalBenar = 0;
+            let totalSoal = 0;
+
+            // Cek input dengan data-key (mean, jumlah_x, jumlah_mutlak, sr)
+            document.querySelectorAll('input[data-key]').forEach(input => {
+                if (input.readOnly) return;
+
+                const key = input.dataset.key;
+                const value = parseFloat(input.value);
+                const benar = KUNCI_BERKAH[key];
+
+                input.classList.remove('correct', 'wrong');
+
+                if (isNaN(value)) {
+                    input.classList.add('wrong');
+                } else if (Math.abs(value - benar) < 0.01) {
+                    input.classList.add('correct');
+                    totalBenar++;
+                } else {
+                    input.classList.add('wrong');
+                }
+                totalSoal++;
+            });
+
+            // Cek tabel: selisih dan mutlak
+            document.querySelectorAll('input[data-row]').forEach(input => {
+                const row = parseInt(input.dataset.row);
+                const col = input.dataset.col;
+                const value = parseFloat(input.value);
+                const benar = KUNCI_BERKAH[col][row];
+
+                input.classList.remove('correct', 'wrong');
+
+                if (isNaN(value)) {
+                    input.classList.add('wrong');
+                } else if (Math.abs(value - benar) < 0.01) {
+                    input.classList.add('correct');
+                    totalBenar++;
+                } else {
+                    input.classList.add('wrong');
+                }
+                totalSoal++;
+            });
+
+            // Auto-fill input readonly dengan nilai yang sama
+            const jumlahX = document.getElementById('jumlah-x');
+            const jumlahX2 = document.getElementById('jumlah-x-2');
+            if (jumlahX && jumlahX2) jumlahX2.value = jumlahX.value;
+
+            const jumMutlak = document.getElementById('jumlah-mutlak');
+            const jumMutlak2 = document.getElementById('jumlah-mutlak-2');
+            if (jumMutlak && jumMutlak2) jumMutlak2.value = jumMutlak.value;
+
+            const persen = totalSoal > 0 ? Math.round((totalBenar / totalSoal) * 100) : 0;
+            Utils.toast(`Skor: ${totalBenar}/${totalSoal} (${persen}%)\n\nJawaban benar = hijau, salah = merah`);
+        }
+
+        // ===== SUBMIT =====
+        async function submitLKPD() {
+            // Hitung skor otomatis
+            let totalBenar = 0;
+            let totalSoal = 0;
+
+            document.querySelectorAll('input[data-key]').forEach(input => {
+                if (input.readOnly) return;
+                totalSoal++;
+                const value = parseFloat(input.value);
+                const benar = KUNCI_BERKAH[input.dataset.key];
+                if (!isNaN(value) && Math.abs(value - benar) < 0.01) totalBenar++;
+            });
+
+            document.querySelectorAll('input[data-row]').forEach(input => {
+                totalSoal++;
+                const row = parseInt(input.dataset.row);
+                const col = input.dataset.col;
+                const value = parseFloat(input.value);
+                const benar = KUNCI_BERKAH[col][row];
+                if (!isNaN(value) && Math.abs(value - benar) < 0.01) totalBenar++;
+            });
+
+            const skor = totalSoal > 0 ? Math.round((totalBenar / totalSoal) * 100) : 0;
+
+            if (!confirm(`Skor LKPD Anda: ${totalBenar}/${totalSoal} (${skor}%)\n\nKirim jawaban?`)) {
+                return;
+            }
+
+            Utils.showLoading('Menyimpan jawaban...');
+
+            // Kumpulkan semua jawaban untuk disimpan
+            const jawaban = {
+                level: userLevel,
+                inputs: {},
+                tabel: { selisih: [], mutlak: [] },
+                analisis: {}
+            };
+
+            document.querySelectorAll('input[data-key]').forEach(input => {
+                if (!input.readOnly) {
+                    jawaban.inputs[input.dataset.key] = input.value;
+                }
+            });
+
+            document.querySelectorAll('input[data-row]').forEach(input => {
+                const row = parseInt(input.dataset.row);
+                const col = input.dataset.col;
+                if (!jawaban.tabel[col]) jawaban.tabel[col] = [];
+                jawaban.tabel[col][row] = input.value;
+            });
+
+            // Analisis (Level 3)
+            ['analisis-1', 'analisis-2', 'analisis-3'].forEach((id, i) => {
+                const el = document.getElementById(id);
+                if (el) jawaban.analisis[id] = el.value;
+            });
+
+            try {
+                // Save asesmen
+                await API.saveAsesmen(
+                    user.id,
+                    'lkpd',
+                    skor,
+                    JSON.stringify(jawaban),
+                    `LKPD Level ${userLevel}`
+                );
+
+                // Update flag latihanSelesai (LKPD termasuk latihan)
+                // Sebenarnya kita bisa tambah flag lkpdSelesai, tapi kita gunakan latihanSelesai
+                // agar tetap kompatibel dengan dashboard
+                // Note: Bisa juga skip update flag, baru update di latihan formal nanti
+
+                Utils.hideLoading();
+                Utils.toast(`LKPD berhasil dikirim! Skor: ${skor}/100`);
+                window.location.href = 'dashboard-siswa.html';
+
+            } catch (error) {
+                Utils.hideLoading();
+                Utils.toast('Error: ' + error.message);
+            }
+        }
+
+        function confirmExit() {
+            if (confirm('Jawaban yang belum disimpan akan hilang. Yakin keluar?')) {
+                window.location.href = 'dashboard-siswa.html';
+            }
+        }
+    </script>
+</body>
+</html>

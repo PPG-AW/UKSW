@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#1E40AF">
+    <title>Latihan Terbimbing - SR</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .soal-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+            padding: var(--space-md);
+            border-radius: var(--radius-lg);
+            margin-bottom: var(--space-md);
+        }
+
+        .soal-progress {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: var(--text-sm);
+            opacity: 0.9;
+        }
+
+        .soal-progress-num {
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 4px 12px;
+            border-radius: var(--radius-full);
+            font-weight: 700;
+        }
+
+        .soal-konteks {
+            background-color: var(--yellow-bg);
+            border-left: 4px solid var(--yellow-dark);
+            padding: var(--space-md);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-md);
+        }
+
+        .konteks-judul {
+            font-size: var(--text-sm);
+            font-weight: 700;
+            color: var(--yellow-dark);
+            margin-bottom: var(--space-xs);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .konteks-desc {
+            font-size: var(--text-sm);
+            color: var(--gray-800);
+            line-height: 1.5;
+            margin-bottom: var(--space-sm);
+        }
+
+        .data-soal {
+            font-family: var(--font-mono);
+            font-size: var(--text-lg);
+            font-weight: 700;
+            color: var(--primary-dark);
+            text-align: center;
+            background-color: var(--white);
+            padding: var(--space-sm);
+            border-radius: var(--radius-sm);
+            margin-top: var(--space-sm);
+        }
+
+        .langkah {
+            background-color: var(--white);
+            border-radius: var(--radius-lg);
+            padding: var(--space-md);
+            margin-bottom: var(--space-md);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .langkah-title {
+            font-size: var(--text-base);
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: var(--space-xs);
+        }
+
+        .langkah-letter {
+            display: inline-block;
+            background-color: var(--primary);
+            color: var(--white);
+            padding: 2px 10px;
+            border-radius: var(--radius-full);
+            font-size: var(--text-xs);
+            font-weight: 700;
+            margin-right: var(--space-sm);
+        }
+
+        .hint {
+            background-color: var(--primary-bg-soft);
+            border-left: 4px solid var(--primary);
+            padding: var(--space-sm) var(--space-md);
+            border-radius: var(--radius-sm);
+            font-size: var(--text-sm);
+            color: var(--gray-700);
+            margin-bottom: var(--space-sm);
+        }
+
+        .input-jawaban {
+            border: 2px solid var(--gray-300);
+            border-radius: var(--radius-sm);
+            padding: 6px 10px;
+            font-family: var(--font-mono);
+            font-size: var(--text-base);
+            font-weight: 600;
+            text-align: center;
+            width: 70px;
+            transition: var(--transition);
+        }
+
+        .input-jawaban:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .input-jawaban.correct {
+            border-color: var(--success);
+            background-color: var(--success-bg);
+            color: var(--success);
+        }
+
+        .input-jawaban.wrong {
+            border-color: var(--danger);
+            background-color: var(--red-bg);
+            color: var(--red-dark);
+        }
+
+        .perhitungan {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            font-family: var(--font-mono);
+            font-size: var(--text-base);
+            background-color: var(--gray-100);
+            padding: var(--space-sm);
+            border-radius: var(--radius-sm);
+            margin-bottom: var(--space-sm);
+        }
+
+        .tabel {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: var(--font-mono);
+            font-size: var(--text-sm);
+        }
+
+        .tabel th, .tabel td {
+            border: 1px solid var(--gray-400);
+            padding: 6px;
+            text-align: center;
+        }
+
+        .tabel th {
+            background-color: var(--primary);
+            color: var(--white);
+        }
+
+        .tabel input {
+            width: 55px;
+            padding: 4px;
+            border: 1px solid var(--gray-300);
+            border-radius: 4px;
+            text-align: center;
+            font-family: var(--font-mono);
+            font-size: var(--text-sm);
+        }
+
+        .tabel input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .tabel input.correct {
+            border-color: var(--success);
+            background-color: var(--success-bg);
+        }
+
+        .tabel input.wrong {
+            border-color: var(--danger);
+            background-color: var(--red-bg);
+        }
+
+        .tabel tr.total {
+            background-color: var(--yellow-bg);
+            font-weight: 700;
+        }
+
+        .hasil-soal {
+            background: linear-gradient(135deg, var(--success-bg) 0%, #BBF7D0 100%);
+            border: 2px solid var(--success);
+            border-radius: var(--radius-lg);
+            padding: var(--space-md);
+            text-align: center;
+            margin-bottom: var(--space-md);
+        }
+
+        .hasil-soal.wrong {
+            background: linear-gradient(135deg, var(--red-bg) 0%, #FECACA 100%);
+            border-color: var(--danger);
+        }
+
+        .hasil-skor {
+            font-size: var(--text-xl);
+            font-weight: 800;
+            color: var(--success);
+            margin-bottom: var(--space-xs);
+        }
+
+        .hasil-soal.wrong .hasil-skor {
+            color: var(--danger);
+        }
+
+        .summary-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+            padding: var(--space-xl);
+            border-radius: var(--radius-lg);
+            text-align: center;
+        }
+
+        .summary-skor {
+            font-size: 48px;
+            font-weight: 800;
+            line-height: 1;
+            margin-bottom: var(--space-xs);
+        }
+
+        .summary-label {
+            font-size: var(--text-sm);
+            opacity: 0.9;
+            margin-bottom: var(--space-md);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <button class="app-header-back" onclick="confirmExit()">
+                &larr; Kembali
+            </button>
+            <h1 class="app-header-title">Latihan Terbimbing</h1>
+            <p class="app-header-subtitle">Dilengkapi hint dan template</p>
+        </header>
+
+        <main class="content" id="content">
+            <div class="spinner"></div>
+        </main>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/generator.js"></script>
+    <script>
+        const TOTAL_SOAL = 5;
+        let soalList = [];
+        let currentSoal = 0;
+        let skorList = [];
+        let user = null;
+
+        window.addEventListener('load', function() {
+            setTimeout(initApp, 200);
+        });
+
+        async function initApp() {
+            if (typeof SoalGenerator === 'undefined') {
+                alert('Generator soal tidak ter-load.');
+                return;
+            }
+
+            if (!Utils.requireLogin()) return;
+
+            user = Utils.getUser();
+
+            // Generate 5 soal
+            for (let i = 0; i < TOTAL_SOAL; i++) {
+                soalList.push(SoalGenerator.generate('easy'));
+            }
+
+            renderSoal();
+        }
+
+        function renderSoal() {
+            const soal = soalList[currentSoal];
+            const num = currentSoal + 1;
+
+            document.getElementById('content').innerHTML = `
+                <div class="soal-header">
+                    <div class="soal-progress">
+                        <span>Latihan Terbimbing</span>
+                        <span class="soal-progress-num">Soal ${num}/${TOTAL_SOAL}</span>
+                    </div>
+                </div>
+
+                <div class="soal-konteks">
+                    <div class="konteks-judul">${soal.konteks.judul}</div>
+                    <div class="konteks-desc">${soal.konteks.deskripsi}</div>
+                    <div class="data-soal">${soal.data.join(' &nbsp; ')}</div>
+                </div>
+
+                <!-- LANGKAH 1: RATA-RATA -->
+                <div class="langkah">
+                    <div class="langkah-title">
+                        <span class="langkah-letter">R</span>Hitung Rata-rata
+                    </div>
+                    <div class="hint">
+                        Jumlah = ${soal.data.join(' + ')} = <strong>${soal.data.reduce((a,b)=>a+b,0)}</strong><br>
+                        n = ${soal.n}
+                    </div>
+                    <div class="perhitungan">
+                        x&#772; = ${soal.data.reduce((a,b)=>a+b,0)} &divide; ${soal.n} =
+                        <input type="number" class="input-jawaban" id="mean" step="0.1">
+                    </div>
+                </div>
+
+                <!-- LANGKAH 2-3: TABEL -->
+                <div class="langkah">
+                    <div class="langkah-title">
+                        <span class="langkah-letter">S-M</span>Isi Tabel
+                    </div>
+                    <div class="hint">
+                        Kolom selisih = data &minus; rata-rata. Kolom mutlak = hilangkan tanda minus.
+                    </div>
+                    <table class="tabel">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>x<sub>i</sub></th>
+                                <th>x<sub>i</sub> &minus; x&#772;</th>
+                                <th>|x<sub>i</sub> &minus; x&#772;|</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${soal.data.map((x, i) => `
+                                <tr>
+                                    <td>${i+1}</td>
+                                    <td>${x}</td>
+                                    <td><input type="number" data-row="${i}" data-col="selisih" step="1"></td>
+                                    <td><input type="number" data-row="${i}" data-col="mutlak" step="1" min="0"></td>
+                                </tr>
+                            `).join('')}
+                            <tr class="total">
+                                <td colspan="3">JUMLAH</td>
+                                <td><input type="number" id="jumlah-mutlak" step="1"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- LANGKAH 5: SR -->
+                <div class="langkah">
+                    <div class="langkah-title">
+                        <span class="langkah-letter">B</span>Hitung SR
+                    </div>
+                    <div class="hint">
+                        SR = Jumlah mutlak &divide; n
+                    </div>
+                    <div class="perhitungan">
+                        SR =
+                        <input type="number" class="input-jawaban" id="sr" step="0.01">
+                    </div>
+                </div>
+
+                <div id="hasil-container"></div>
+
+                <button class="btn btn-primary btn-block btn-large" onclick="cekDanLanjut()">
+                    ${currentSoal < TOTAL_SOAL - 1 ? 'Cek &amp; Lanjut Soal Berikutnya' : 'Cek &amp; Selesai'}
+                </button>
+            `;
+
+            window.scrollTo(0, 0);
+        }
+
+        function ambilJawaban() {
+            const jawaban = {
+                mean: document.getElementById('mean').value,
+                selisih: [],
+                mutlak: [],
+                jumlahMutlak: document.getElementById('jumlah-mutlak').value,
+                sr: document.getElementById('sr').value
+            };
+
+            const soal = soalList[currentSoal];
+            for (let i = 0; i < soal.n; i++) {
+                jawaban.selisih.push(document.querySelector(`input[data-row="${i}"][data-col="selisih"]`).value);
+                jawaban.mutlak.push(document.querySelector(`input[data-row="${i}"][data-col="mutlak"]`).value);
+            }
+
+            return jawaban;
+        }
+
+        function tampilkanFeedback(soal, jawaban, hasil) {
+            // Mean
+            const meanInput = document.getElementById('mean');
+            meanInput.classList.remove('correct', 'wrong');
+            meanInput.classList.add(hasil.mean ? 'correct' : 'wrong');
+
+            // Selisih & Mutlak
+            soal.data.forEach((_, i) => {
+                const selInput = document.querySelector(`input[data-row="${i}"][data-col="selisih"]`);
+                const mutInput = document.querySelector(`input[data-row="${i}"][data-col="mutlak"]`);
+                selInput.classList.remove('correct', 'wrong');
+                mutInput.classList.remove('correct', 'wrong');
+                selInput.classList.add(hasil.selisih[i] ? 'correct' : 'wrong');
+                mutInput.classList.add(hasil.mutlak[i] ? 'correct' : 'wrong');
+            });
+
+            // Jumlah mutlak
+            const jmInput = document.getElementById('jumlah-mutlak');
+            jmInput.classList.remove('correct', 'wrong');
+            jmInput.classList.add(hasil.jumlahMutlak ? 'correct' : 'wrong');
+
+            // SR
+            const srInput = document.getElementById('sr');
+            srInput.classList.remove('correct', 'wrong');
+            srInput.classList.add(hasil.sr ? 'correct' : 'wrong');
+
+            // Container hasil
+            const container = document.getElementById('hasil-container');
+            const isPerfect = hasil.skor === 100;
+
+            container.innerHTML = `
+                <div class="hasil-soal ${!isPerfect ? 'wrong' : ''}">
+                    <div class="hasil-skor">${hasil.totalBenar}/${hasil.totalSoal}</div>
+                    <div>${isPerfect ? 'Sempurna! Semua jawaban benar.' : 'Beberapa jawaban belum tepat. Lihat warna merah.'}</div>
+                    <div style="margin-top: 8px; font-size: var(--text-sm); color: var(--gray-700);">
+                        Jawaban benar SR = <strong>${soal.sr}</strong>
+                    </div>
+                </div>
+            `;
+        }
+
+        function cekDanLanjut() {
+            const soal = soalList[currentSoal];
+            const jawaban = ambilJawaban();
+            const hasil = SoalGenerator.cekJawaban(soal, jawaban);
+
+            tampilkanFeedback(soal, jawaban, hasil);
+
+            skorList[currentSoal] = hasil.skor;
+
+            // Disable button sementara
+            const btn = document.querySelector('button.btn-primary');
+            if (currentSoal < TOTAL_SOAL - 1) {
+                btn.textContent = 'Lanjut Soal Berikutnya →';
+                btn.onclick = () => {
+                    currentSoal++;
+                    renderSoal();
+                };
+            } else {
+                btn.textContent = 'Lihat Hasil Akhir →';
+                btn.onclick = renderSummary;
+            }
+        }
+
+        async function renderSummary() {
+            const totalSkor = Math.round(skorList.reduce((a, b) => a + b, 0) / TOTAL_SOAL);
+
+            document.getElementById('content').innerHTML = `
+                <div class="summary-card">
+                    <div class="summary-label">Skor Latihan Terbimbing</div>
+                    <div class="summary-skor">${totalSkor}</div>
+                    <div class="summary-label">
+                        ${totalSkor >= 75 ? 'Bagus! Anda sudah siap ke Latihan Mandiri.' :
+                          totalSkor >= 50 ? 'Lumayan! Coba latihan lagi untuk meningkatkan skor.' :
+                          'Pelajari kembali materi atau ulangi latihan ini.'}
+                    </div>
+                </div>
+
+                <div class="card mt-md">
+                    <h3 class="card-title">Detail Skor per Soal</h3>
+                    ${skorList.map((s, i) => `
+                        <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--gray-200);">
+                            <span>Soal ${i+1}</span>
+                            <strong style="color: ${s >= 75 ? 'var(--success)' : s >= 50 ? 'var(--warning)' : 'var(--danger)'};">${s}/100</strong>
+                        </div>
+                    `).join('')}
+                </div>
+
+                <button class="btn btn-primary btn-block btn-large mt-md" onclick="window.location.href='latihan-mandiri.html'">
+                    Lanjut ke Latihan Mandiri
+                </button>
+
+                <button class="btn btn-outline btn-block mt-sm" onclick="window.location.reload()">
+                    Coba Latihan Terbimbing Lagi
+                </button>
+
+                <button class="btn btn-secondary btn-block mt-sm" onclick="window.location.href='dashboard-siswa.html'">
+                    Kembali ke Dashboard
+                </button>
+            `;
+
+            // Save skor terbimbing
+            try {
+                await API.saveAsesmen(user.id, 'latihan-terbimbing', totalSkor, '', `Rata-rata 5 soal terbimbing`);
+            } catch (e) {
+                console.error('Save error:', e);
+            }
+        }
+
+        function confirmExit() {
+            if (confirm('Yakin keluar? Progress latihan akan hilang.')) {
+                window.location.href = 'dashboard-siswa.html';
+            }
+        }
+    </script>
+</body>
+</html>
